@@ -1,0 +1,12 @@
+{
+  "name": "conversation-thread-app",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "NODE_ENV=development vite",
+    "prod": "NODE_ENV=production vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.1.0"
+  }
+}
