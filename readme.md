@@ -1,4 +1,3 @@
-
 # Conversation Thread App
 
 A lightweight, markdown-based threaded conversation app using GitHub Pages for hosting and GitHub authentication for participation.
@@ -11,6 +10,8 @@ A lightweight, markdown-based threaded conversation app using GitHub Pages for h
 - Display names mapped from GitHub usernames
 - Works without JavaScript (readable markdown)
 - Real-time updates without page rebuilds
+- React-based UI components
+- Full test coverage with Jest
 
 ## Setup
 
@@ -44,22 +45,23 @@ install
 }
 ```
 
-4. Configure environment in config.js:
+4. Configure environment in config.ts:
 
-```js
-const configs = {
+```typescript
+const env = import.meta.env.MODE || 'development'
+export const config = {
     development: {
-        useAuth: false,
-        dataSource: 'local',
-        conversationPath: '/data/conversation.md'
-    },
+    useAuth: false,
+    dataSource: 'local',
+    conversationPath: '/data/conversation.md'
+},
     production: {
-        useAuth: true,
-        dataSource: 'github',
-        repo: 'your_username/repo_name',
-        branch: 'main'
-    }
-};
+    useAuth: true,
+    dataSource: 'github',
+    repo: 'your_username/repo_name',
+    branch: 'main'
+}
+}[env]
 ```
 
 ## Development
@@ -67,6 +69,11 @@ const configs = {
 Run locally:
 ```bash
 npm run dev
+```
+
+Run tests:
+```bash
+npm test
 ```
 
 Build for production:
@@ -93,17 +100,18 @@ Participants are configured in participants.json with GitHub usernames mapped to
 
 ## Technical Details
 
-- Built with vanilla JavaScript and CSS
+- Built with React 18 and TypeScript
 - Uses Vite for development and building
+- Jest + Testing Library for testing
 - GitHub OAuth for authentication
 - Markdown as the source of truth
 - No database required
 
 ### Core Components
 
-- ThreadApp: Main application controller
-- UI: Handles rendering and user interactions
-- Auth: Manages GitHub authentication and user display names
+- ThreadApp: Main React application
+- Thread: Handles thread rendering and state
+- Message: Individual message component with collapsing
 - ThreadManager: Handles thread operations and state
 - LocalDataService/GitHubAPI: Data persistence layer
 
