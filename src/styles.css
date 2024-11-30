@@ -32,6 +32,28 @@ body {
     border-left: 2px solid var(--border-color);
 }
 
+.thread-title {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    user-select: none;
+}
+
+.thread-title:hover {
+    color: var(--primary-color);
+}
+
+.thread-title .collapse-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+    color: var(--text-color);
+}
+
+.thread-messages.collapsed {
+display: none;
+}
+
 .hidden {
     display: none;
 }
