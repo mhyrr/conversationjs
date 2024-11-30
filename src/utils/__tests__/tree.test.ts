@@ -112,4 +112,25 @@ describe('buildMessageTree', () => {
     expect(result).toHaveLength(1)
     expect(result[0].children).toHaveLength(0)  // Orphaned message should be ignored
   })
+
+  test('maintains message order within same depth', () => {
+    const messages = [
+      { author: 'user1', timestamp: '1', content: ['First'], depth: 0 },
+      { author: 'user2', timestamp: '2', content: ['Second'], depth: 0 }
+    ]
+    const result = buildMessageTree(messages)
+    expect(result[0].content[0]).toBe('First')
+    expect(result[1].content[0]).toBe('Second')
+  })
+
+  test('handles deep nesting', () => {
+    const messages = [
+      { author: 'user1', timestamp: '1', content: ['Root'], depth: 0 },
+      { author: 'user2', timestamp: '2', content: ['Level 1'], depth: 1 },
+      { author: 'user3', timestamp: '3', content: ['Level 2'], depth: 2 },
+      { author: 'user4', timestamp: '4', content: ['Level 3'], depth: 3 }
+    ]
+    const result = buildMessageTree(messages)
+    expect(result[0].children[0].children[0].children[0].content[0]).toBe('Level 3')
+  })
 }) 

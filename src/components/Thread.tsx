@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Message } from './Message'
 import type { Thread } from '../utils/markdown'
 import { buildMessageTree } from '../utils/tree'

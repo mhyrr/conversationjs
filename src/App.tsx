@@ -1,4 +1,3 @@
-import React from 'react'
 import { useEffect, useState } from 'react'
 import { ThreadList } from './components/ThreadList'
 import { useThreads } from './hooks/useThreads'
