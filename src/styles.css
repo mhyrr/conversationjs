@@ -1,170 +1,171 @@
-/* Copy existing CSS here */ :root {
-    --primary-color: #0366d6;
-    --border-color: #e1e4e8;
-    --bg-color: #ffffff;
-    --text-color: #24292e;
-}
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    line-height: 1.5;
-    color: var(--text-color);
-    margin: 0;
-    padding: 0;
-}
-
-#app {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1rem;
-}
-
-.thread {
-    border: 1px solid var(--border-color);
-    margin: 1rem 0;
-    padding: 1rem;
-    border-radius: 6px;
-}
-
-.thread-replies {
-    margin-left: 2rem;
-    padding-left: 1rem;
-    border-left: 2px solid var(--border-color);
-}
-
-.thread-title {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    user-select: none;
-}
-
-.thread-title:hover {
-    color: var(--primary-color);
-}
-
-.thread-title .collapse-icon {
-    font-size: 1.2rem;
-    line-height: 1;
-    color: var(--text-color);
-}
-
-.thread-messages.collapsed {
-display: none;
-}
-
-.hidden {
-    display: none;
-}
-
-.message-container {
-    position: relative;
-    margin: 1rem 0;
-}
-
-.message-thread {
-    margin: 1rem 0;
-}
-
-.message {
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 1rem;
-    background: var(--bg-color);
-    margin-left: 1.5rem;
-}
-
-.message-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.message-header strong {
-    color: var(--text-color);
-}
-
-.replies {
-    margin-left: 2rem;
-    padding-left: 1rem;
-    border-left: 2px solid var(--border-color);
-}
-
-.message p {
-    margin: 0.5rem 0;
-}
-
-.message p:first-child {
-    margin-top: 0;
-}
-
-.message p:last-child {
-    margin-bottom: 0;
-}
-
-.collapse-toggle {
-    padding: 0;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-color);
-}
-
-.collapse-icon {
-    font-size: 1.2rem;
-    line-height: 1;
-}
-
-.timestamp {
-    color: #666;
-    font-size: 0.9em;
-    margin-left: 0.5rem;
-}
-
-.thread-messages {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.message-group {
-    margin: 1rem 0;
-    padding: 0.5rem;
-    border: none;
-}
-
-.message-content {
-    padding: 0.5rem;
-}
-
-.message-prefix {
-    color: #666;
-    margin-bottom: 0.5rem;
-    font-family: monospace;
-}
-
-.message-replies {
-    margin-left: 2rem;
-    padding-left: 1rem;
-    border-left: 2px solid var(--border-color);
-    margin-top: 1rem;
-}
-
-.message-content p {
-    margin: 0.5rem 0;
-}
-
-.message-replies.collapsed {
-    display: none;
-}
-
-.message-content-body.collapsed,
-.message-replies.collapsed {
-    display: none;
-} 
+ /* Copy existing CSS here */ :root {
+     --primary-color: #0366d6;
+     --border-color: #e1e4e8;
+     --bg-color: #ffffff;
+     --text-color: #24292e;
+ }
+ 
+ body {
+     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+     line-height: 1.5;
+     color: var(--text-color);
+     margin: 0;
+     padding: 0;
+ }
+ 
+ #app {
+     max-width: 1200px;
+     margin: 0 auto;
+     padding: 1rem;
+ }
+ 
+ .thread {
+     border: 1px solid var(--border-color);
+     margin: 1rem 0;
+     padding: 1rem;
+     border-radius: 6px;
+ }
+ 
+ .thread-replies {
+     margin-left: 2rem;
+     padding-left: 1rem;
+     border-left: 2px solid var(--border-color);
+ }
+ 
+ .thread-title {
+     cursor: pointer;
+     display: flex;
+     align-items: center;
+     gap: 0.5rem;
+     user-select: none;
+ }
+ 
+ .thread-title:hover {
+     color: var(--primary-color);
+ }
+ 
+ .thread-title .collapse-icon {
+     font-size: 1.2rem;
+     line-height: 1;
+     color: var(--text-color);
+ }
+ 
+ .thread-messages.collapsed {
+ display: none;
+ }
+ 
+ .hidden {
+     display: none;
+ }
+ 
+ .message-container {
+     position: relative;
+     margin: 1rem 0;
+ }
+ 
+ .message-thread {
+     margin: 1rem 0;
+ }
+ 
+ .message {
+     border: 1px solid var(--border-color);
+     border-radius: 6px;
+     padding: 1rem;
+     background: var(--bg-color);
+     margin-left: 1.5rem;
+ }
+ 
+ .message-header {
+     display: flex;
+     align-items: center;
+     gap: 0.5rem;
+ }
+ 
+ .message-header strong {
+     color: var(--text-color);
+ }
+ 
+ .replies {
+     margin-left: 2rem;
+     padding-left: 1rem;
+     border-left: 2px solid var(--border-color);
+ }
+ 
+ .message p {
+     margin: 0.5rem 0;
+ }
+ 
+ .message p:first-child {
+     margin-top: 0;
+ }
+ 
+ .message p:last-child {
+     margin-bottom: 0;
+ }
+ 
+ .collapse-toggle {
+     padding: 0;
+     width: 20px;
+     height: 20px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     background: none;
+     border: none;
+     cursor: pointer;
+     color: var(--text-color);
+ }
+ 
+ .collapse-icon {
+     font-size: 1.2rem;
+     line-height: 1;
+ }
+ 
+ .timestamp {
+     color: #666;
+     font-size: 0.9em;
+     margin-left: 0.5rem;
+ }
+ 
+ .thread-messages {
+     display: flex;
+     flex-direction: column;
+     gap: 1.5rem;
+ }
+ 
+ .message-group {
+     margin: 1rem 0;
+     padding: 0.5rem;
+     border: none;
+ }
+ 
+ .message-content {
+     padding: 0.5rem;
+ }
+ 
+ .message-prefix {
+     color: #666;
+     margin-bottom: 0.5rem;
+     font-family: monospace;
+ }
+ 
+ .message-replies {
+     margin-left: 2rem;
+     padding-left: 1rem;
+     border-left: 2px solid var(--border-color);
+     margin-top: 1rem;
+ }
+ 
+ .message-content p {
+     margin: 0.5rem 0;
+ }
+ 
+ .message-replies.collapsed {
+     display: none;
+ }
+ 
+ .message-content-body.collapsed,
+ .message-replies.collapsed {
+     display: none;
+ } 
+\ No newline at end of file

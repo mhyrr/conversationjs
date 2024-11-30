@@ -24,7 +24,7 @@ export function parseMarkdown(content: string): Thread[] {
         messages: []
       };
     } else if (line.match(/^\s*- @/)) {
-      const indentLevel = (line.match(/^\s*/)[0].length) / 2;
+      const indentLevel = (line.match(/^\s*/) ?? [''])[0].length / 2;
       const match = line.match(/- @(\w+) \[(.*?)\]: (.*)/);
       if (match && currentThread) {
         currentMessage = {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import type { MessageNode } from '../utils/tree'
 import { createMessageKey } from '../utils/keys'
 
