@@ -1,4 +1,5 @@
 const env = import.meta.env.MODE || 'development'
+const base = import.meta.env.BASE_URL || '/'
 
 export const config = {
   development: {
@@ -8,8 +9,7 @@ export const config = {
   },
   production: {
     useAuth: true,
-    dataSource: 'github',
-    repo: 'your_username/repo_name',
-    branch: 'main'
+    dataSource: 'local',
+    conversationPath: `${base}data/conversation.md`
   }
 }[env] 

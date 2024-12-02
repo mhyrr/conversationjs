@@ -15,43 +15,37 @@ export function AuthCallback() {
       }
 
       try {
-        // In production, trigger the GitHub Action workflow
+        // In production, use GitHub's OAuth token endpoint directly
         if (import.meta.env.PROD) {
-          const response = await fetch('https://api.github.com/repos/mhyrr/conversationjs/dispatches', {
+          const tokenUrl = `https://github.com/login/oauth/access_token?` +
+            `client_id=${import.meta.env.VITE_APP_GH_CLIENT_ID}&` +
+            `code=${code}`;
+
+          const response = await fetch(tokenUrl, {
             method: 'POST',
             headers: {
-              'Accept': 'application/vnd.github.v3+json',
-              'Authorization': `token ${import.meta.env.VITE_APP_GH_CLIENT_ID}`,
-            },
-            body: JSON.stringify({
-              event_type: 'oauth-callback',
-              client_payload: {
-                code
-              }
-            })
+              'Accept': 'application/json',
+            }
           });
 
-          if (response.ok) {
-            // Wait for token response
-            const tokenResponse = await response.json();
-            if (tokenResponse.access_token) {
-              localStorage.setItem('github_token', tokenResponse.access_token);
-              
-              const userResponse = await fetch('https://api.github.com/user', {
-                headers: {
-                  'Authorization': `token ${tokenResponse.access_token}`,
-                  'Accept': 'application/vnd.github.v3+json'
-                }
-              });
-              
-              if (userResponse.ok) {
-                const userData = await userResponse.json();
-                localStorage.setItem('github_user', JSON.stringify(userData));
+          const data = await response.json();
+          if (data.access_token) {
+            localStorage.setItem('github_token', data.access_token);
+            
+            const userResponse = await fetch('https://api.github.com/user', {
+              headers: {
+                'Authorization': `token ${data.access_token}`,
+                'Accept': 'application/vnd.github.v3+json'
               }
+            });
+            
+            if (userResponse.ok) {
+              const userData = await userResponse.json();
+              localStorage.setItem('github_user', JSON.stringify(userData));
             }
           }
         } else {
-          // In development, use the local server
+          // Development flow stays the same
           const response = await fetch('http://localhost:3000/auth/token', {
             method: 'POST',
             headers: {

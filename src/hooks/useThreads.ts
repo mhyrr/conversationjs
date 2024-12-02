@@ -1,22 +1,24 @@
 import { useState, useEffect } from 'react'
 import { config } from '../config'
-import { parseMarkdown } from '../utils/markdown'
-import type { Thread } from '../utils/markdown'
 
 export function useThreads() {
-  const [threads, setThreads] = useState<Thread[]>([])
+  const [threads, setThreads] = useState([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     async function fetchThreads() {
       try {
         const response = await fetch(config.conversationPath)
-        const markdown = await response.text()
-        const parsedThreads = parseMarkdown(markdown)
-        setThreads(parsedThreads)
+        if (!response.ok) {
+          throw new Error('Failed to fetch conversation')
+        }
+        const text = await response.text()
+        // Process markdown text into threads
+        setThreads(text)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load threads')
+        console.error('Error fetching threads:', err)
+        setError(err)
       } finally {
         setLoading(false)
       }
