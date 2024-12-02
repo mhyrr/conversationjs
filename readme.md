@@ -1,27 +1,37 @@
-# Conversation Thread App
+# ConversationJS
 
-A lightweight, markdown-based threaded conversation app using GitHub Pages for hosting and GitHub authentication for participation.
+A GitHub-based conversation platform for collaborative discussions.
 
-## Features
+## Quick Start
 
-- Threaded discussions with unlimited nesting depth
-- Collapsible message threads
-- GitHub-based authentication
-- Display names mapped from GitHub usernames
-- Works without JavaScript (readable markdown)
-- Real-time updates without page rebuilds
-- React-based UI components
-- Full test coverage with Jest
-
-## Setup
-
-1. Clone the repository
-2. Install dependencies:
+1. Fork this repository
+2. Clone your fork:
 
 ```bash
-install
+git clone https://github.com/your_username/conversationjs.git
+cd conversationjs
 ```
-3. Configure participants in participants.json:
+
+3. Create a GitHub OAuth App:
+   - Go to GitHub Settings -> Developer Settings -> OAuth Apps
+   - Click "New OAuth App"
+   - Set Application Name: "Your Conversation"
+   - Homepage URL: `http://localhost:5173`
+   - Authorization callback URL: `http://localhost:5173/auth/callback`
+   - Save your Client ID and Client Secret
+
+4. Set up environment:
+
+```bash
+# Create .env file
+echo "VITE_GITHUB_CLIENT_ID=your_client_id" > .env
+# Create server/.env file
+echo "VITE_GITHUB_CLIENT_ID=your_client_id" > server/.env
+echo "VITE_GITHUB_CLIENT_SECRET=your_client_secret" >> server/.env
+```
+
+
+4. Configure participants in participants.json:
  
 ```json
 {
@@ -45,7 +55,7 @@ install
 }
 ```
 
-4. Configure environment in config.ts:
+5. Configure environment in config.ts:
 
 ```typescript
 const env = import.meta.env.MODE || 'development'
