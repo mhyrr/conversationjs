@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { generateGitHubAppJWT } from '../utils/jwt';
 
 export function AuthCallback() {
   const navigate = useNavigate();
@@ -7,68 +8,40 @@ export function AuthCallback() {
   useEffect(() => {
     async function handleCallback() {
       const params = new URLSearchParams(window.location.search);
-      const code = params.get('code');
+      const installationId = params.get('installation_id');
       
-      if (!code) {
+      if (!installationId) {
         navigate('/');
         return;
       }
 
       try {
-        // In production, use GitHub's OAuth token endpoint directly
-        if (import.meta.env.PROD) {
-          const tokenUrl = `https://github.com/login/oauth/access_token?` +
-            `client_id=${import.meta.env.VITE_APP_GH_CLIENT_ID}&` +
-            `code=${code}`;
-
-          const response = await fetch(tokenUrl, {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-            }
-          });
-
-          const data = await response.json();
-          if (data.access_token) {
-            localStorage.setItem('github_token', data.access_token);
-            
-            const userResponse = await fetch('https://api.github.com/user', {
-              headers: {
-                'Authorization': `token ${data.access_token}`,
-                'Accept': 'application/vnd.github.v3+json'
-              }
-            });
-            
-            if (userResponse.ok) {
-              const userData = await userResponse.json();
-              localStorage.setItem('github_user', JSON.stringify(userData));
-            }
+        const jwt = await generateGitHubAppJWT();
+        
+        // Get installation token
+        const tokenUrl = `https://api.github.com/app/installations/${installationId}/access_tokens`;
+        const response = await fetch(tokenUrl, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/vnd.github.v3+json',
+            'Authorization': `Bearer ${jwt}`,
           }
-        } else {
-          // Development flow stays the same
-          const response = await fetch('http://localhost:3000/auth/token', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ code }),
-          });
+        });
 
-          const data = await response.json();
-          if (data.access_token) {
-            localStorage.setItem('github_token', data.access_token);
-            
-            const userResponse = await fetch('https://api.github.com/user', {
-              headers: {
-                'Authorization': `token ${data.access_token}`,
-                'Accept': 'application/vnd.github.v3+json'
-              }
-            });
-            
-            if (userResponse.ok) {
-              const userData = await userResponse.json();
-              localStorage.setItem('github_user', JSON.stringify(userData));
+        const data = await response.json();
+        if (data.token) {
+          localStorage.setItem('github_token', data.token);
+          
+          const userResponse = await fetch('https://api.github.com/user', {
+            headers: {
+              'Authorization': `token ${data.token}`,
+              'Accept': 'application/vnd.github.v3+json'
             }
+          });
+          
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            localStorage.setItem('github_user', JSON.stringify(userData));
           }
         }
       } catch (error) {

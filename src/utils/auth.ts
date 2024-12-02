@@ -7,19 +7,14 @@ export interface GithubUser {
 }
 
 export async function authenticateWithGithub(): Promise<GithubUser | null> {
-  const clientId = import.meta.env.VITE_APP_GH_CLIENT_ID;
+  const appId = import.meta.env.VITE_APP_GH_APP_ID;
   const isProd = import.meta.env.PROD;
   
-  // Get repo name from URL in prod
   const repoName = isProd 
     ? window.location.pathname.split('/')[1]
     : 'conversationjs';
     
-  const redirectUri = isProd 
-    ? `${window.location.origin}/${repoName}/auth/callback`
-    : `${window.location.origin}/auth/callback`;
-  
-  const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=repo`;
+  const authUrl = `https://github.com/apps/${appId}/installations/new`;
   window.location.href = authUrl;
   return null;
 }
