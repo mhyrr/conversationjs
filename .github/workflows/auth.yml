@@ -1,19 +1,21 @@
-name: Auth Handler
+name: OAuth Handler
 
 on:
   repository_dispatch:
     types: [oauth-callback]
 
 jobs:
-  handle-auth:
+  handle-oauth:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      
-      - name: Exchange OAuth Code
+      - name: Handle OAuth Callback
         env:
-          CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+          CLIENT_ID: ${{ secrets.APP_GH_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.APP_GH_CLIENT_SECRET }}
         run: |
-          # GitHub Action will handle the token exchange
-          # and store results in GitHub Pages _headers 
+          response=$(curl -s -X POST \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json" \
+            -d "{\"client_id\":\"$CLIENT_ID\",\"client_secret\":\"$CLIENT_SECRET\",\"code\":\"${{ github.event.client_payload.code }}\"}" \
+            https://github.com/login/oauth/access_token)
+          echo "::set-output name=token::$response"

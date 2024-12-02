@@ -15,31 +15,31 @@ export function AuthCallback() {
       }
 
       try {
-        const response = await fetch('http://localhost:3000/auth/token', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ code }),
-        });
+        // In production, trigger the GitHub Action workflow
+        if (import.meta.env.PROD) {
+          const response = await fetch('https://api.github.com/repos/mhyrr/conversationjs/dispatches', {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/vnd.github.v3+json',
+              'Authorization': `token ${import.meta.env.VITE_APP_GH_CLIENT_ID}`,
+            },
+            body: JSON.stringify({
+              event_type: 'oauth-callback',
+              client_payload: {
+                code
+              }
+            })
+          });
 
-        const data = await response.json();
-        console.log('Token response:', data);
-        
-        if (data.access_token) {
-          // Store token first
-          localStorage.setItem('github_token', data.access_token);
-          
-          // Small delay to ensure token is stored
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
-          // Retry user info fetch up to 3 times
-          let attempts = 0;
-          while (attempts < 3) {
-            try {
+          if (response.ok) {
+            // Wait for token response
+            const tokenResponse = await response.json();
+            if (tokenResponse.access_token) {
+              localStorage.setItem('github_token', tokenResponse.access_token);
+              
               const userResponse = await fetch('https://api.github.com/user', {
                 headers: {
-                  'Authorization': `token ${data.access_token}`,
+                  'Authorization': `token ${tokenResponse.access_token}`,
                   'Accept': 'application/vnd.github.v3+json'
                 }
               });
@@ -47,19 +47,33 @@ export function AuthCallback() {
               if (userResponse.ok) {
                 const userData = await userResponse.json();
                 localStorage.setItem('github_user', JSON.stringify(userData));
-                break;
               }
-              
-              attempts++;
-              if (attempts < 3) {
-                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+          }
+        } else {
+          // In development, use the local server
+          const response = await fetch('http://localhost:3000/auth/token', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ code }),
+          });
+
+          const data = await response.json();
+          if (data.access_token) {
+            localStorage.setItem('github_token', data.access_token);
+            
+            const userResponse = await fetch('https://api.github.com/user', {
+              headers: {
+                'Authorization': `token ${data.access_token}`,
+                'Accept': 'application/vnd.github.v3+json'
               }
-            } catch (error) {
-              console.error(`Attempt ${attempts + 1} failed:`, error);
-              attempts++;
-              if (attempts < 3) {
-                await new Promise(resolve => setTimeout(resolve, 500));
-              }
+            });
+            
+            if (userResponse.ok) {
+              const userData = await userResponse.json();
+              localStorage.setItem('github_user', JSON.stringify(userData));
             }
           }
         }
@@ -73,5 +87,7 @@ export function AuthCallback() {
     handleCallback();
   }, [navigate]);
 
-  return <div>Authenticating...</div>;
+  return <div className="flex justify-center items-center min-h-screen">
+    <div className="text-lg">Authenticating...</div>
+  </div>;
 } 
