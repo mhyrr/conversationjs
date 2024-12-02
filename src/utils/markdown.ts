@@ -1,15 +1,24 @@
-export interface Thread {
+/**
+ * Markdown parsing utilities
+ * - Parses thread titles and metadata
+ * - Extracts message content, authors, and timestamps
+ * - Handles multi-line messages and indentation
+ * - Ignores malformed content
+ */
+
+interface Thread {
   title: string;
   messages: Message[];
 }
 
-export interface Message {
-  author: string;
-  timestamp: string;
-  content: string[];
-  depth: number;
-}
-
+/**
+ * Parses markdown content into thread structures
+ * Format:
+ * ### Thread Title [metadata]
+ * - @author [timestamp]: Message content
+ *   Continued message content
+ *   - @author2 [timestamp]: Reply
+ */
 export function parseMarkdown(content: string): Thread[] {
   const lines = content.split('\n');
   const threads: Thread[] = [];

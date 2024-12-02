@@ -1,36 +1,45 @@
-import type { Message } from './markdown'
+/**
+ * Tree utilities for converting flat message arrays into nested structures
+ * - Handles arbitrary nesting depth
+ * - Preserves message order
+ * - Maintains parent-child relationships based on depth
+ */
 
-export interface MessageNode extends Message {
-  children: MessageNode[]
+interface Message {
+  author: string
+  timestamp: string
+  content: string[]
+  depth: number
+  children?: Message[]
 }
 
-export function buildMessageTree(messages: Message[]): MessageNode[] {
-  // First pass: create nodes
-  const nodes: MessageNode[] = messages.map(msg => ({
-    ...msg,
-    children: []
-  }))
+/**
+ * Converts a flat array of messages into a nested tree structure
+ * based on message depth values
+ */
+export function buildMessageTree(messages: Message[]): Message[] {
+  const result: Message[] = []
+  const stack: Message[] = []
 
-  // Second pass: build tree
-  const rootNodes: MessageNode[] = []
-  
-  for (let i = 0; i < nodes.length; i++) {
-    const node = nodes[i]
+  messages.forEach(message => {
+    // Clone message and initialize children array
+    const node = { ...message, children: [] }
     
-    if (node.depth === 0) {
-      rootNodes.push(node)
-      continue
+    // Pop stack until we find the parent
+    while (stack.length > 0 && stack[stack.length - 1].depth >= node.depth) {
+      stack.pop()
     }
 
-    // Look backwards for parent
-    for (let j = i - 1; j >= 0; j--) {
-      const potentialParent = nodes[j]
-      if (potentialParent.depth === node.depth - 1) {
-        potentialParent.children.push(node)
-        break
-      }
+    if (stack.length === 0) {
+      // Root level message
+      result.push(node)
+    } else {
+      // Add as child to parent
+      stack[stack.length - 1].children!.push(node)
     }
-  }
+    
+    stack.push(node)
+  })
 
-  return rootNodes
+  return result
 } 
