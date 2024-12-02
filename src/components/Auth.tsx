@@ -4,6 +4,7 @@ import { authenticateWithGithub, getCurrentUser, logout, GithubUser } from '../u
 
 export function Auth() {
   const [user, setUser] = useState<GithubUser | null>(null);
+  const basePath = import.meta.env.BASE_URL;
 
   useEffect(() => {
     const currentUser = getCurrentUser();
@@ -20,7 +21,11 @@ export function Auth() {
   const headerContent = (
     <div className="flex justify-between h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex-shrink-0 flex items-center">
-        <img className="h-8 w-auto" src="/favicon.svg" alt="ConversationJS" />
+        <img 
+          className="h-8 w-auto" 
+          src={`${basePath}favicon.svg`} 
+          alt="ConversationJS" 
+        />
         <span className="ml-2 text-lg font-semibold text-gray-900">ConversationJS</span>
       </div>
       
