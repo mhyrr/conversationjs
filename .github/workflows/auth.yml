@@ -1,0 +1,19 @@
+name: Auth Handler
+
+on:
+  repository_dispatch:
+    types: [oauth-callback]
+
+jobs:
+  handle-auth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Exchange OAuth Code
+        env:
+          CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+        run: |
+          # GitHub Action will handle the token exchange
+          # and store results in GitHub Pages _headers 
