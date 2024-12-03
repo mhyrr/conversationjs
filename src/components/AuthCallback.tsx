@@ -24,25 +24,28 @@ export function AuthCallback() {
       try {
         if (import.meta.env.PROD) {
           console.log('Production: Starting token exchange');
-          // Production: Use GitHub API directly
-          const tokenUrl = 'https://github.com/login/oauth/access_token';
-          const response = await fetch(tokenUrl, {
+          // Use GitHub's recommended proxy
+          const proxyUrl = 'https://cors-anywhere.herokuapp.com/https://github.com/login/oauth/access_token';
+          const response = await fetch(proxyUrl, {
             method: 'POST',
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json',
+              'Origin': window.location.origin,
             },
             body: JSON.stringify({
               client_id: import.meta.env.VITE_APP_GH_CLIENT_ID,
+              client_secret: import.meta.env.VITE_APP_GH_CLIENT_SECRET,
               code,
-            })
+            }),
           });
 
           const data = await response.json();
+          console.log('Token response:', data);
+          
           if (data.access_token) {
             localStorage.setItem('github_token', data.access_token);
             
-            // Get user info
             const userResponse = await fetch('https://api.github.com/user', {
               headers: {
                 'Authorization': `token ${data.access_token}`,
@@ -57,7 +60,6 @@ export function AuthCallback() {
           }
         } else {
           console.log('Development: Using local server');
-          // Development: Use local server
           const response = await fetch('http://localhost:3000/auth/token', {
             method: 'POST',
             headers: {
