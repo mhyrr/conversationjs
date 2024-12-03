@@ -1,6 +1,6 @@
-const env = import.meta.env.MODE
+const env = import.meta.env.MODE;
 
-export const config = {
+const config = {
   development: {
     useAuth: true,
     dataSource: 'local',
@@ -15,4 +15,5 @@ export const config = {
   }
 }[env];
 
+// Single export
 export { config }; 
