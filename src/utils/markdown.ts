@@ -6,9 +6,10 @@
  * - Ignores malformed content
  */
 
-interface Thread {
+export interface Thread {
   title: string;
   messages: Message[];
+  collapsed?: boolean;
 }
 
 /**
