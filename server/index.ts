@@ -13,7 +13,10 @@ const __dirname = dirname(__filename);
 dotenv.config({ path: join(__dirname, '.env') });
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://mhyrr.github.io'],
+  credentials: true
+}));
 app.use(express.json());
 
 app.post('/auth/token', async (req: express.Request, res: express.Response) => {

@@ -28,6 +28,7 @@ jobs:
         run: npm run build
         env:
           VITE_APP_GH_CLIENT_ID: ${{ secrets.APP_GH_CLIENT_ID }}
+          VITE_APP_GH_CLIENT_SECRET: ${{ secrets.APP_GH_CLIENT_SECRET }}
       
       - name: List dist directory
         run: ls -la dist
