@@ -17,7 +17,31 @@ export function AuthCallback() {
 
       try {
         if (import.meta.env.PROD) {
-          // Production flow...
+            // Use Vercel API route in both dev and prod
+          const response = await fetch('/api/auth/callback', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ code }),
+          });
+
+          const data = await response.json();
+          if (data.access_token) {
+            localStorage.setItem('github_token', data.access_token);
+            
+            const userResponse = await fetch('https://api.github.com/user', {
+              headers: {
+                'Authorization': `token ${data.access_token}`,
+                'Accept': 'application/vnd.github.v3+json'
+              }
+            });
+            
+            if (userResponse.ok) {
+              const userData = await userResponse.json();
+              localStorage.setItem('github_user', JSON.stringify(userData));
+            }
+          }
         } else {
           const response = await fetch('http://localhost:3000/auth/token', {
             method: 'POST',
@@ -41,7 +65,7 @@ export function AuthCallback() {
               
               // Check if user is authorized before storing credentials
               if (!isAuthorizedUser(userData.login)) {
-                alert(`Sorry, ${userData.login} is not a participant in this conversation`);
+                alert(`Sorry, ${userData.login} is not a participant in this conversation - take a look at the participants.json file`);
                 navigate('/');
                 return;
               }
