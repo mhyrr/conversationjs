@@ -11,6 +11,7 @@ export interface Message {
   timestamp: string;
   content: string;
   depth?: number;
+  replies?: Message[];
 }
 
 export interface Thread {
@@ -28,50 +29,38 @@ export interface Thread {
  *   - @author2 [timestamp]: Reply
  */
 export function parseMarkdown(markdown: string): Thread[] {
+  const lines = markdown.split('\n');
   const threads: Thread[] = [];
   let currentThread: Thread | null = null;
   let currentMessage: Message | null = null;
-  let messageContent: string[] = [];
 
-  markdown.split('\n').forEach(line => {
-    const threadMatch = line.match(/^###\s+(.+)$/);
-    if (threadMatch) {
+  lines.forEach((line) => {
+    if (line.startsWith('### ')) {
       if (currentThread) {
         threads.push(currentThread);
       }
       currentThread = {
-        title: threadMatch[1],
+        title: line.slice(4).trim(),
         messages: [],
         collapsed: false
       };
-      return;
-    }
-
-    if (!currentThread) return;
-
-    const messageMatch = line.match(/^(\s*)-\s+@(\w+)\s+\[([^\]]+)\]:\s+(.+)$/);
-    if (messageMatch) {
-      if (currentMessage) {
-        currentMessage.content = messageContent.join('\n');
+    } else if (currentThread) {
+      const messageMatch = line.match(/^(\s*)-\s+@(\w+)\s+\[([^\]]+)\]:\s+(.+)$/);
+      if (messageMatch) {
+        const [, indent, author, timestamp, content] = messageMatch;
+        const depth = (indent || '').length / 2;
+        currentMessage = {
+          author,
+          timestamp,
+          content,
+          depth,
+          replies: []
+        };
         currentThread.messages.push(currentMessage);
       }
-      const indentLevel = (messageMatch[1] || '').length / 2;
-      messageContent = [messageMatch[4]];
-      currentMessage = {
-        author: messageMatch[2],
-        timestamp: messageMatch[3],
-        content: '',
-        depth: indentLevel
-      };
-    } else if (line.trim() && currentMessage) {
-      messageContent.push(line.trim());
     }
   });
 
-  if (currentMessage && currentThread) {
-    currentMessage.content = messageContent.join('\n');
-    currentThread.messages.push(currentMessage);
-  }
   if (currentThread) {
     threads.push(currentThread);
   }

@@ -130,11 +130,10 @@
  .thread-messages {
      display: flex;
      flex-direction: column;
-     gap: 1.5rem;
  }
  
  .message-group {
-     margin: 1rem 0;
+     margin: 0 0;
      padding: 0.5rem;
      border: none;
  }
