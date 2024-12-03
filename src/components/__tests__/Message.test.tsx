@@ -1,37 +1,37 @@
 import { render, screen } from '@testing-library/react'
 import { Message } from '../Message'
+import type { Message as MessageType } from '../utils/markdown'
 
 describe('Message', () => {
-  const mockMessage = {
+  const mockMessage: MessageType = {
     author: 'user1',
     timestamp: '2024-01-01',
-    content: ['Hello', 'Second paragraph'],
+    content: 'Hello world',
     depth: 0,
-    children: []
+    replies: []
   }
 
   test('renders message content', () => {
     render(<Message message={mockMessage} />)
-    expect(screen.getByText('Hello')).toBeInTheDocument()
-    expect(screen.getByText('Second paragraph')).toBeInTheDocument()
+    expect(screen.getByText('Hello world')).toBeInTheDocument()
   })
 
-  test('shows collapse button only when has children', () => {
-    const messageWithChildren = {
+  test('renders nested messages', () => {
+    const messageWithChildren: MessageType = {
       ...mockMessage,
-      children: [{
+      replies: [{
         author: 'user2',
         timestamp: '2024-01-02',
-        content: ['Reply'],
+        content: 'Reply message',
         depth: 1,
-        children: []
+        replies: []
       }]
     }
-    
+
     const { rerender } = render(<Message message={mockMessage} />)
-    expect(screen.queryByRole('button')).not.toBeInTheDocument()
-    
+    expect(screen.queryByText('Reply message')).not.toBeInTheDocument()
+
     rerender(<Message message={messageWithChildren} />)
-    expect(screen.getByRole('button')).toBeInTheDocument()
+    expect(screen.getByText('Reply message')).toBeInTheDocument()
   })
 }) 
