@@ -6,6 +6,13 @@
  * - Ignores malformed content
  */
 
+export interface Message {
+  author: string;
+  timestamp: string;
+  content: string;
+  replies?: Message[];
+}
+
 export interface Thread {
   title: string;
   messages: Message[];
