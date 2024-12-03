@@ -1,15 +1,17 @@
-const env = import.meta.env.MODE || 'development'
+const env = import.meta.env.MODE
+const base = import.meta.env.BASE_URL
 
 export const config = {
   development: {
-    useAuth: false,
+    useAuth: true,
     dataSource: 'local',
-    conversationPath: '/data/conversation.md'
+    conversationPath: '/data/conversation.md',
+    faviconPath: '/favicon.svg'
   },
   production: {
     useAuth: true,
-    dataSource: 'github',
-    repo: 'your_username/repo_name',
-    branch: 'main'
+    dataSource: 'local',
+    conversationPath: `${base}data/conversation.md`,
+    faviconPath: `${base}favicon.svg`
   }
 }[env] 
