@@ -11,7 +11,7 @@ export async function authenticateWithGithub(): Promise<GithubUser | null> {
   const isProd = import.meta.env.PROD;
   
   const redirectUri = isProd 
-    ? 'https://mhyrr.github.io/conversationjs/auth/callback'
+    ? 'https://conversationjs.vercel.app/auth/callback'
     : `${window.location.origin}/auth/callback`;
   
   console.log('Auth Debug:', {

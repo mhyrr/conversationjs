@@ -1,7 +1,6 @@
 const env = import.meta.env.MODE
-const base = import.meta.env.BASE_URL
 
-const config = {
+export const config = {
   development: {
     useAuth: true,
     dataSource: 'local',
@@ -11,9 +10,9 @@ const config = {
   production: {
     useAuth: true,
     dataSource: 'local',
-    conversationPath: `${base}data/conversation.md`,
-    faviconPath: `${base}favicon.svg`
+    conversationPath: '/data/conversation.md',
+    faviconPath: '/favicon.svg'
   }
-}[env] as const;
+}[env];
 
 export { config }; 
