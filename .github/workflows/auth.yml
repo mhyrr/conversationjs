@@ -1,19 +1,32 @@
-name: Auth Handler
+name: Handle OAuth
 
 on:
   repository_dispatch:
-    types: [oauth-callback]
+    types: [oauth-exchange]
 
 jobs:
-  handle-auth:
+  exchange:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      
-      - name: Exchange OAuth Code
+      - name: Exchange code for token
+        id: exchange
+        uses: actions/github-script@v7
         env:
-          CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
-        run: |
-          # GitHub Action will handle the token exchange
-          # and store results in GitHub Pages _headers 
+          CLIENT_ID: ${{ secrets.APP_GH_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.APP_GH_CLIENT_SECRET }}
+          CODE: ${{ github.event.client_payload.code }}
+        with:
+          script: |
+            const response = await fetch('https://github.com/login/oauth/access_token', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                client_id: process.env.CLIENT_ID,
+                client_secret: process.env.CLIENT_SECRET,
+                code: process.env.CODE
+              })
+            });
+            return await response.json();
