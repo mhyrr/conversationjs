@@ -13,7 +13,7 @@ export function App() {
   const basePath = import.meta.env.BASE_URL
 
   return (
-    <BrowserRouter basename={basePath}>
+    <BrowserRouter basename={basePath.replace(/\/$/, '')}>
       <Auth />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
         <header className="mb-8">
@@ -23,6 +23,7 @@ export function App() {
         <Routes>
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/" element={<ThreadList threads={threads} />} />
+          <Route path="*" element={<AuthCallback />} />
         </Routes>
       </div>
     </BrowserRouter>
