@@ -25,7 +25,7 @@ export function Auth() {
         <div className="flex-shrink-0 flex items-center">
           <img 
             className="h-8 w-auto" 
-            src={config.faviconPath}
+            src={config?.faviconPath || '/favicon.svg'}
             alt="ConversationJS" 
           />
           <span className="ml-2 text-lg font-semibold text-gray-900">ConversationJS</span>
