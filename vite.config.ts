@@ -11,5 +11,10 @@ export default defineConfig(({ command }) => ({
         changeOrigin: true,
       }
     }
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    copyPublicDir: true
   }
 })) 
