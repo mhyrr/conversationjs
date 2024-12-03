@@ -7,15 +7,20 @@ export interface GithubUser {
 }
 
 export async function authenticateWithGithub(): Promise<GithubUser | null> {
-  const appId = import.meta.env.VITE_APP_GH_APP_ID;
   const isProd = import.meta.env.PROD;
   
-  const repoName = isProd 
-    ? window.location.pathname.split('/')[1]
-    : 'conversationjs';
-    
-  const authUrl = `https://github.com/apps/${appId}/installations/new`;
-  window.location.href = authUrl;
+  if (isProd) {
+    // Production: Use GitHub App flow
+    const appId = import.meta.env.VITE_APP_GH_APP_ID;
+    const authUrl = `https://github.com/apps/${appId}/installations/new`;
+    window.location.href = authUrl;
+  } else {
+    // Development: Use OAuth flow with local proxy
+    const clientId = import.meta.env.VITE_APP_GH_CLIENT_ID;
+    const redirectUri = `${window.location.origin}/auth/callback`;
+    const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=repo`;
+    window.location.href = authUrl;
+  }
   return null;
 }
 
