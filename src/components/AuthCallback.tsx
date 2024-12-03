@@ -15,51 +15,62 @@ export function AuthCallback() {
       }
 
       try {
-        const response = await fetch('http://localhost:3000/auth/token', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ code }),
-        });
+        if (import.meta.env.PROD) {
+          // Production: Use GitHub API directly
+          const tokenUrl = 'https://github.com/login/oauth/access_token';
+          const response = await fetch(tokenUrl, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              client_id: import.meta.env.VITE_APP_GH_CLIENT_ID,
+              code,
+            })
+          });
 
-        const data = await response.json();
-        console.log('Token response:', data);
-        
-        if (data.access_token) {
-          // Store token first
-          localStorage.setItem('github_token', data.access_token);
-          
-          // Small delay to ensure token is stored
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
-          // Retry user info fetch up to 3 times
-          let attempts = 0;
-          while (attempts < 3) {
-            try {
-              const userResponse = await fetch('https://api.github.com/user', {
-                headers: {
-                  'Authorization': `token ${data.access_token}`,
-                  'Accept': 'application/vnd.github.v3+json'
-                }
-              });
-              
-              if (userResponse.ok) {
-                const userData = await userResponse.json();
-                localStorage.setItem('github_user', JSON.stringify(userData));
-                break;
+          const data = await response.json();
+          if (data.access_token) {
+            localStorage.setItem('github_token', data.access_token);
+            
+            // Get user info
+            const userResponse = await fetch('https://api.github.com/user', {
+              headers: {
+                'Authorization': `token ${data.access_token}`,
+                'Accept': 'application/vnd.github.v3+json'
               }
-              
-              attempts++;
-              if (attempts < 3) {
-                await new Promise(resolve => setTimeout(resolve, 500));
+            });
+            
+            if (userResponse.ok) {
+              const userData = await userResponse.json();
+              localStorage.setItem('github_user', JSON.stringify(userData));
+            }
+          }
+        } else {
+          // Development: Use local server
+          const response = await fetch('http://localhost:3000/auth/token', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ code }),
+          });
+
+          const data = await response.json();
+          if (data.access_token) {
+            localStorage.setItem('github_token', data.access_token);
+            
+            const userResponse = await fetch('https://api.github.com/user', {
+              headers: {
+                'Authorization': `token ${data.access_token}`,
+                'Accept': 'application/vnd.github.v3+json'
               }
-            } catch (error) {
-              console.error(`Attempt ${attempts + 1} failed:`, error);
-              attempts++;
-              if (attempts < 3) {
-                await new Promise(resolve => setTimeout(resolve, 500));
-              }
+            });
+            
+            if (userResponse.ok) {
+              const userData = await userResponse.json();
+              localStorage.setItem('github_user', JSON.stringify(userData));
             }
           }
         }
@@ -73,5 +84,7 @@ export function AuthCallback() {
     handleCallback();
   }, [navigate]);
 
-  return <div>Authenticating...</div>;
+  return <div className="flex justify-center items-center min-h-screen">
+    <div className="text-lg">Authenticating...</div>
+  </div>;
 } 
