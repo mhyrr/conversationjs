@@ -10,16 +10,23 @@ export async function authenticateWithGithub(): Promise<GithubUser | null> {
   const clientId = import.meta.env.VITE_APP_GH_CLIENT_ID;
   const isProd = import.meta.env.PROD;
   
-  // Get repo name from URL in prod
-  const repoName = isProd 
-    ? window.location.pathname.split('/')[1]
-    : 'conversationjs';
-    
   const redirectUri = isProd 
-    ? `${window.location.origin}/${repoName}/auth/callback`
+    ? 'https://mhyrr.github.io/conversationjs/auth/callback'
     : `${window.location.origin}/auth/callback`;
   
-  const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=repo`;
+  console.log('Auth Debug:', {
+    clientId,
+    isProd,
+    redirectUri,
+    currentUrl: window.location.href
+  });
+
+  const authUrl = `https://github.com/login/oauth/authorize?` +
+    `client_id=${clientId}&` +
+    `redirect_uri=${redirectUri}&` +
+    `scope=repo`;
+
+  console.log('Redirecting to:', authUrl);
   window.location.href = authUrl;
   return null;
 }

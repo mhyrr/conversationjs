@@ -9,13 +9,21 @@ export function AuthCallback() {
       const params = new URLSearchParams(window.location.search);
       const code = params.get('code');
       
+      console.log('Callback Debug:', {
+        currentUrl: window.location.href,
+        code,
+        params: Object.fromEntries(params.entries())
+      });
+
       if (!code) {
+        console.log('No code found, redirecting home');
         navigate('/');
         return;
       }
 
       try {
         if (import.meta.env.PROD) {
+          console.log('Production: Starting token exchange');
           // Production: Use GitHub API directly
           const tokenUrl = 'https://github.com/login/oauth/access_token';
           const response = await fetch(tokenUrl, {
@@ -48,6 +56,7 @@ export function AuthCallback() {
             }
           }
         } else {
+          console.log('Development: Using local server');
           // Development: Use local server
           const response = await fetch('http://localhost:3000/auth/token', {
             method: 'POST',
@@ -85,6 +94,8 @@ export function AuthCallback() {
   }, [navigate]);
 
   return <div className="flex justify-center items-center min-h-screen">
-    <div className="text-lg">Authenticating...</div>
+    <div className="text-lg">
+      Authenticating... Check console for debug info.
+    </div>
   </div>;
 } 
