@@ -1,0 +1,20 @@
+{
+    "participants": [
+        {
+            "username": "wsdoun",
+            "displayName": "Sywei Doun",
+            "avatarUrl": "https://github.com/wsdoun.png"
+        },
+        {
+            "username": "grolsen",
+            "displayName": "Greg Olsen",
+            "avatarUrl": "https://github.com/mhyrr.png"
+        }
+    ],
+    "settings": {
+        "allow_public_view": true,
+        "allow_reactions": true,
+        "require_approval": false,
+        "conversation_path": "data/conversation.md"
+    }
+} 
