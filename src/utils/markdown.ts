@@ -6,14 +6,6 @@
  * - Ignores malformed content
  */
 
-export interface Message {
-  author: string;
-  timestamp: string;
-  content: string;
-  depth?: number;
-  replies?: Message[];
-}
-
 export interface Thread {
   title: string;
   messages: Message[];
@@ -28,42 +20,36 @@ export interface Thread {
  *   Continued message content
  *   - @author2 [timestamp]: Reply
  */
-export function parseMarkdown(markdown: string): Thread[] {
-  const lines = markdown.split('\n');
+export function parseMarkdown(content: string): Thread[] {
+  const lines = content.split('\n');
   const threads: Thread[] = [];
   let currentThread: Thread | null = null;
   let currentMessage: Message | null = null;
 
   lines.forEach((line) => {
     if (line.startsWith('### ')) {
-      if (currentThread) {
-        threads.push(currentThread);
-      }
+      if (currentThread) threads.push(currentThread);
       currentThread = {
-        title: line.slice(4).trim(),
-        messages: [],
-        collapsed: false
+        title: line.replace('### ', '').replace(/ \[.*\]/, ''),
+        messages: []
       };
-    } else if (currentThread) {
-      const messageMatch = line.match(/^(\s*)-\s+@(\w+)\s+\[([^\]]+)\]:\s+(.+)$/);
-      if (messageMatch) {
-        const [, indent, author, timestamp, content] = messageMatch;
-        const depth = (indent || '').length / 2;
+    } else if (line.match(/^\s*- @/)) {
+      const indentLevel = (line.match(/^\s*/) ?? [''])[0].length / 2;
+      const match = line.match(/- @(\w+) \[(.*?)\]: (.*)/);
+      if (match && currentThread) {
         currentMessage = {
-          author,
-          timestamp,
-          content,
-          depth,
-          replies: []
+          author: match[1],
+          timestamp: match[2],
+          content: [match[3]],
+          depth: indentLevel
         };
         currentThread.messages.push(currentMessage);
       }
+    } else if (line.trim() && currentMessage) {
+      currentMessage.content.push(line.trim());
     }
   });
 
-  if (currentThread) {
-    threads.push(currentThread);
-  }
-
+  if (currentThread) threads.push(currentThread);
   return threads;
 } 
