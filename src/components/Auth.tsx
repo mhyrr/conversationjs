@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { authenticateWithGithub, getCurrentUser, logout, GithubUser } from '../utils/auth';
 import { config } from '../config';
 
-export function Auth() {
+export function Auth({ onAuthChange }: { onAuthChange?: () => void }) {
   const [user, setUser] = useState<GithubUser | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -17,6 +17,7 @@ export function Auth() {
     logout();
     setUser(null);
     setShowDropdown(false);
+    onAuthChange?.();
   };
 
   return (
