@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { MessageNode } from '../utils/tree'
 import { createMessageKey } from '../utils/keys'
 import { getCurrentUser } from '../utils/auth'
-import { updateMessage, replyToMessage } from '../utils/api'
+import { updateMessage, replyToMessage, moveToThread } from '../utils/api'
 
 interface MessageProps {
   message: MessageNode;
@@ -14,8 +14,10 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [isReplying, setIsReplying] = useState(false)
+  const [isMoving, setIsMoving] = useState(false)
   const [editContent, setEditContent] = useState(message.content.join('\n'))
   const [replyContent, setReplyContent] = useState('')
+  const [newThreadTitle, setNewThreadTitle] = useState('')
   
   const currentUser = getCurrentUser()
   const isOwnMessage = currentUser?.login === message.author
@@ -74,6 +76,25 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
     }
   };
 
+  const handleMoveToThread = async () => {
+    if (!currentUser) return;
+
+    const success = await moveToThread({
+      newTitle: newThreadTitle,
+      sourceThreadTitle: threadTitle,
+      messageAuthor: message.author,
+      messageTimestamp: message.timestamp,
+      messageContent: message.content
+    });
+
+    if (success) {
+      setIsMoving(false);
+      setNewThreadTitle('');
+      // Refresh the page to show new thread
+      window.location.reload();
+    }
+  };
+
   return (
     <div className="message-group" data-depth={message.depth}>
       <div className="message-content">
@@ -97,9 +118,14 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
                     Edit
                   </button>
                 ) : (
-                  <button onClick={() => setIsReplying(true)} className="text-blue-500 text-sm ml-2">
-                    Reply
-                  </button>
+                  <>
+                    <button onClick={() => setIsReplying(true)} className="text-blue-500 text-sm ml-2">
+                      Reply
+                    </button>
+                    <button onClick={() => setIsMoving(true)} className="text-blue-500 text-sm ml-2">
+                      Move to Thread
+                    </button>
+                  </>
                 )}
               </div>
             )}
@@ -159,6 +185,32 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
               onUpdate={onUpdate}
             />
           ))}
+        </div>
+      )}
+      {isMoving && (
+        <div className="move-form mt-2">
+          <input
+            type="text"
+            placeholder="New Thread Title"
+            value={newThreadTitle}
+            onChange={(e) => setNewThreadTitle(e.target.value)}
+            className="w-full p-2 border rounded mb-2"
+          />
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => setIsMoving(false)}
+              className="px-3 py-1 text-gray-600"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleMoveToThread}
+              className="px-3 py-1 bg-blue-500 text-white rounded"
+              disabled={!newThreadTitle.trim()}
+            >
+              Move
+            </button>
+          </div>
         </div>
       )}
     </div>

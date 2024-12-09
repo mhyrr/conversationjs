@@ -14,6 +14,22 @@ interface MessageReply {
   author: string;
 }
 
+interface NewThread {
+  title: string;
+  initialMessage?: {
+    content: string[];
+    author: string;
+  };
+}
+
+interface MoveToThread {
+  newTitle: string;
+  sourceThreadTitle: string;
+  messageAuthor: string;
+  messageTimestamp: string;
+  messageContent: string[];
+}
+
 // Use the same port as the auth server
 const DEV_API_URL = 'http://localhost:3000';
 
@@ -35,6 +51,30 @@ export async function replyToMessage(reply: MessageReply): Promise<boolean> {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(reply)
+    });
+    return response.ok;
+  }
+  return false;
+}
+
+export async function createThread(thread: NewThread): Promise<boolean> {
+  if (import.meta.env.DEV) {
+    const response = await fetch(`${DEV_API_URL}/api/threads/create`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(thread)
+    });
+    return response.ok;
+  }
+  return false;
+}
+
+export async function moveToThread(move: MoveToThread): Promise<boolean> {
+  if (import.meta.env.DEV) {
+    const response = await fetch(`${DEV_API_URL}/api/threads/move`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(move)
     });
     return response.ok;
   }
