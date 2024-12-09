@@ -3,10 +3,11 @@
 - @user1 [2024-03-21]: The hard problem of consciousness remains one of philosophy's most intractable issues. While we can map neural correlates and identify brain states, the qualitative experience - the "what it feels like" to be conscious - continues to elude scientific explanation.
 
 I find it particularly interesting that we can't even definitively say whether consciousness is continuous or discrete. Do we experience reality in frames, like a movie, or in a continuous stream? The evidence seems mixed.
-
+  - @mhyrr [2024-12-09]: LFG Test
 - @user2 [2024-03-21]: The frame-based theory of consciousness is fascinating, but I think it misses a crucial point about the nature of subjective experience. When we talk about qualia, we're not just discussing temporal resolution, but the fundamental nature of experience itself.
 
   Consider how memory interfaces with consciousness. We don't remember continuous streams, but rather key moments and transitions. This suggests our experience might be more quantized than we imagine.
+  - @mhyrr [2024-12-09]: Alright
 
   - @user1 [2024-03-21]: That's an interesting connection to memory, but couldn't that be more about storage efficiency than the nature of consciousness itself? After all, our visual system processes massive amounts of information continuously, most of which never reaches conscious awareness.
 
