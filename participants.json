@@ -12,7 +12,7 @@
         }
     ],
     "settings": {
-        "allow_public_view": false,
+        "allow_public_view": true,
         "allow_reactions": true,
         "require_approval": false
     }
