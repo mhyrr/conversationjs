@@ -1,4 +1,5 @@
-import { parseMarkdown, type Thread } from '../markdown'
+import { parseMarkdown } from '../markdown'
+import type { Thread } from '../../types'
 
 describe('parseMarkdown', () => {
   test('parses basic thread', () => {

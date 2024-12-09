@@ -1,5 +1,5 @@
 import { buildMessageTree } from '../tree'
-import type { Thread } from '../markdown'
+import type { Thread, Message } from '../../types'
 
 describe('buildMessageTree', () => {
   test('handles single message', () => {

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { Thread } from '../Thread'
-import type { Thread as ThreadType, Message as MessageType } from '../utils/markdown'
+import type { Thread as ThreadType, Message as MessageType } from '../../types'
 
 describe('Thread', () => {
   const mockThread: ThreadType = {
@@ -8,9 +8,9 @@ describe('Thread', () => {
     messages: [{
       author: 'user1',
       timestamp: '2024-01-01',
-      content: 'Hello world',
+      content: ['Hello world'],
       depth: 0,
-      replies: []
+      children: []
     }],
     collapsed: false
   }

@@ -1,3 +1,5 @@
+import type { Message, Thread } from '../types';
+
 /**
  * Markdown parsing utilities
  * - Parses thread titles and metadata
@@ -5,12 +7,6 @@
  * - Handles multi-line messages and indentation
  * - Ignores malformed content
  */
-
-export interface Thread {
-  title: string;
-  messages: Message[];
-  collapsed?: boolean;
-}
 
 /**
  * Parses markdown content into thread structures

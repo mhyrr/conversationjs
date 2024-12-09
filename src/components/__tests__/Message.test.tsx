@@ -1,14 +1,14 @@
 import { render, screen } from '@testing-library/react'
 import { Message } from '../Message'
-import type { Message as MessageType } from '../utils/markdown'
+import type { Message as MessageType } from '../../types'
 
 describe('Message', () => {
   const mockMessage: MessageType = {
     author: 'user1',
     timestamp: '2024-01-01',
-    content: 'Hello world',
+    content: ['Hello world'],
     depth: 0,
-    replies: []
+    children: []
   }
 
   test('renders message content', () => {
@@ -19,12 +19,12 @@ describe('Message', () => {
   test('renders nested messages', () => {
     const messageWithChildren: MessageType = {
       ...mockMessage,
-      replies: [{
+      children: [{
         author: 'user2',
         timestamp: '2024-01-02',
-        content: 'Reply message',
+        content: ['Reply message'],
         depth: 1,
-        replies: []
+        children: []
       }]
     }
 

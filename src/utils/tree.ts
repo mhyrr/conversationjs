@@ -5,13 +5,7 @@
  * - Maintains parent-child relationships based on depth
  */
 
-interface Message {
-  author: string
-  timestamp: string
-  content: string[]
-  depth: number
-  children?: Message[]
-}
+import type { Message } from '../types';
 
 /**
  * Converts a flat array of messages into a nested tree structure
