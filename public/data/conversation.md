@@ -21,8 +21,6 @@ I find it particularly interesting that we can't even definitively say whether c
 
     - @user2 [2024-03-21T12:05:44Z]: The filtering mechanism you're describing might actually be the key to understanding consciousness. What if consciousness isn't a property or state, but rather a process of information integration and exclusion? This aligns with Integrated Information Theory, though I have some reservations about its mathematical formalization.
 
-### AI
-
 ### The Role of Technology in Human Evolution
 
 - @user1 [2024-03-21T13:10:25Z]: We often think of evolution as a purely biological process, but technology has become an integral part of human evolutionary pressure. Our tools are no longer just external aids - they're reshaping our cognitive architecture and social structures in real time.
@@ -42,3 +40,11 @@ The smartphone is perhaps the most dramatic example of this in recent history. W
 
 - @user1 [2024-03-21T12:30:15]: The mathematical approach to consciousness always struck me as putting the cart before the horse. How can we quantify something we can't even properly define? IIT makes interesting predictions, but its fundamental axioms seem more like assumptions about the nature of consciousness than derived principles.
   - @mhyrr [2024-12-10T18:22:31]: BOOM2
+
+
+### AI
+
+- @mhyrr [2024-12-10T18:27:20]: Oh hey!
+  
+  This is my multiparagraph new idea!
+

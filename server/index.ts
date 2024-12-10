@@ -207,36 +207,28 @@ function createNewThread(content: string, thread: any): string {
   console.log('Creating new thread:', thread);
   const lines = content.split('\n');
   const newLines: string[] = [];
-  let addedThread = false;
+  
+  // Copy existing content
+  newLines.push(...lines);
 
-  // Find the right place to add the new thread (after any existing threads)
-  for (let i = 0; i < lines.length; i++) {
-    newLines.push(lines[i]);
-    
-    if (!addedThread && (i === lines.length - 1 || 
-        (i < lines.length - 1 && lines[i + 1].startsWith('### ')))) {
-      // Ensure we have a blank line before new thread
-      if (newLines[newLines.length - 1].trim() !== '') {
-        newLines.push('');
-      }
-      
-      // Add the new thread
-      newLines.push(`### ${thread.title}`);
-      newLines.push('');
-      
-      // Add initial message if provided
-      if (thread.initialMessage) {
-        const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
-        newLines.push(`- @${thread.initialMessage.author} [${timestamp}]: ${thread.initialMessage.content[0]}`);
-        // Add any additional content lines with proper indentation
-        for (let j = 1; j < thread.initialMessage.content.length; j++) {
-          newLines.push(`  ${thread.initialMessage.content[j]}`);
-        }
-        newLines.push('');
-      }
-      
-      addedThread = true;
+  // Ensure we have a blank line before new thread
+  if (newLines[newLines.length - 1].trim() !== '') {
+    newLines.push('');
+  }
+  
+  // Add the new thread
+  newLines.push(`### ${thread.title}`);
+  newLines.push('');
+  
+  // Add initial message if provided
+  if (thread.initialMessage) {
+    const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
+    newLines.push(`- @${thread.initialMessage.author} [${timestamp}]: ${thread.initialMessage.content[0]}`);
+    // Add any additional content lines with proper indentation
+    for (let j = 1; j < thread.initialMessage.content.length; j++) {
+      newLines.push(`  ${thread.initialMessage.content[j]}`);
     }
+    newLines.push('');
   }
 
   // Ensure file ends with newline
