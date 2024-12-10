@@ -4,11 +4,10 @@
 
 I find it particularly interesting that we can't even definitively say whether consciousness is continuous or discrete. Do we experience reality in frames, like a movie, or in a continuous stream? The evidence seems mixed.
 
-  - @mhyrr [2024-12-10T14:30:45Z]: Well well!
+  - @mhyrr [2024-12-10T14:30:45]: Well well!!
 
 
-  - @mhyrr [2024-12-10T18:10:47Z]: BOOM
-
+  - @mhyrr [2024-12-10T18:19:38]: BOOM!!
 
 - @user2 [2024-03-21T10:45:22Z]: The frame-based theory of consciousness is fascinating, but I think it misses a crucial point about the nature of subjective experience. When we talk about qualia, we're not just discussing temporal resolution, but the fundamental nature of experience itself.
 
@@ -21,12 +20,6 @@ I find it particularly interesting that we can't even definitively say whether c
     - @mhyrr [2024-12-10T14:32:00Z]: test!!
 
     - @user2 [2024-03-21T12:05:44Z]: The filtering mechanism you're describing might actually be the key to understanding consciousness. What if consciousness isn't a property or state, but rather a process of information integration and exclusion? This aligns with Integrated Information Theory, though I have some reservations about its mathematical formalization.
-
-      - @user1 [2024-03-21T12:30:15Z]: The mathematical approach to consciousness always struck me as putting the cart before the horse. How can we quantify something we can't even properly define? IIT makes interesting predictions, but its fundamental axioms seem more like assumptions about the nature of consciousness than derived principles.
-
-
-        - @mhyrr [2024-12-10T18:15:02Z]: Here
-
 
 ### AI
 
@@ -44,3 +37,8 @@ The smartphone is perhaps the most dramatic example of this in recent history. W
 
     - @user2 [2024-03-21T15:45:50Z]: Fair point about selective pressures, but I think we need to be careful about timeframes here. Evolution operates over thousands of generations. What we're seeing with technology might be better described as rapid cultural adaptation with potential evolutionary implications.
 
+
+### MATH!
+
+- @user1 [2024-03-21T12:30:15]: The mathematical approach to consciousness always struck me as putting the cart before the horse. How can we quantify something we can't even properly define? IIT makes interesting predictions, but its fundamental axioms seem more like assumptions about the nature of consciousness than derived principles.
+  - @mhyrr [2024-12-10T18:22:31]: BOOM2
