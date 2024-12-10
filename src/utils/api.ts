@@ -2,7 +2,6 @@ interface MessageUpdate {
   threadTitle: string;
   messageAuthor: string;
   messageTimestamp: string;
-  originalContent: string[];
   newContent: string[];
 }
 
@@ -10,9 +9,9 @@ interface MessageReply {
   threadTitle: string;
   parentAuthor: string;
   parentTimestamp: string;
-  parentContent: string[];
   content: string[];
   author: string;
+  timestamp: string;
 }
 
 interface NewThread {
@@ -29,6 +28,12 @@ interface MoveToThread {
   messageAuthor: string;
   messageTimestamp: string;
   messageContent: string[];
+}
+
+interface MessageIdentifier {
+  threadTitle: string;
+  messageAuthor: string;
+  messageTimestamp: string;
 }
 
 // Use the same port as the auth server
@@ -85,14 +90,8 @@ export async function moveToThread(move: MoveToThread): Promise<boolean> {
 export async function deleteMessage({
   threadTitle,
   messageAuthor,
-  messageTimestamp,
-  messageContent
-}: {
-  threadTitle: string;
-  messageAuthor: string;
-  messageTimestamp: string;
-  messageContent: string[];
-}): Promise<boolean> {
+  messageTimestamp
+}: MessageIdentifier): Promise<boolean> {
   if (import.meta.env.DEV) {
     try {
       const response = await fetch(`${DEV_API_URL}/api/messages/delete`, {
@@ -103,8 +102,7 @@ export async function deleteMessage({
         body: JSON.stringify({
           threadTitle,
           messageAuthor,
-          messageTimestamp,
-          messageContent
+          messageTimestamp
         }),
       });
       return response.ok;

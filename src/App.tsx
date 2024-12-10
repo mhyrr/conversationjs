@@ -7,7 +7,7 @@ import { Auth } from './components/Auth'
 import participants from '../participants.json'
 
 export function App() {
-  const { threads, loading, error } = useThreads()
+  const { threads, triggerUpdate } = useThreads()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   
   const checkAuth = () => {
@@ -35,7 +35,7 @@ export function App() {
                 <header className="mb-8">
                   <h1 className="text-2xl font-bold text-gray-900">Conversation Threads</h1>
                 </header>
-                <ThreadList threads={threads} />
+                <ThreadList threads={threads} onUpdate={triggerUpdate} />
               </>
             ) : (
               <div className="text-center mt-20">

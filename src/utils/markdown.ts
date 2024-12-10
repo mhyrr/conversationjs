@@ -42,12 +42,13 @@ export function parseMarkdown(content: string): Thread[] {
       };
     } else if (line.match(/^\s*- @/)) {
       const indentLevel = (line.match(/^\s*/) ?? [''])[0].length / 2;
-      const match = line.match(/- @(\w+) \[(.*?)\]: (.*)/);
+      const match = line.match(/- @(\w+) \[(.*?)T(.*?)Z?\]: (.*)/);
       if (match && currentThread) {
+        const [, author, date, time, content] = match;
         currentMessage = {
-          author: match[1],
-          timestamp: match[2],
-          content: [match[3]],
+          author,
+          timestamp: `${date}T${time}`,
+          content: [content],
           depth: indentLevel
         };
         currentThread.messages.push(currentMessage);

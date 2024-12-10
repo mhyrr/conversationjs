@@ -5,41 +5,73 @@
  * - Maintains parent-child relationships based on depth
  */
 
-interface Message {
-  author: string
-  timestamp: string
-  content: string[]
-  depth: number
-  children?: Message[]
+export interface MessageNode {
+  author: string;
+  timestamp: string;
+  content: string[];
+  depth: number;
+  path: string;
+  children: MessageNode[];
 }
 
 /**
  * Converts a flat array of messages into a nested tree structure
  * based on message depth values
  */
-export function buildMessageTree(messages: Message[]): Message[] {
-  const result: Message[] = []
-  const stack: Message[] = []
+export function buildMessageTree(messages: any[]): MessageNode[] {
+  const messageMap = new Map<string, MessageNode>();
+  const roots: MessageNode[] = [];
 
-  messages.forEach(message => {
-    // Clone message and initialize children array
-    const node = { ...message, children: [] }
-    
-    // Pop stack until we find the parent
-    while (stack.length > 0 && stack[stack.length - 1].depth >= node.depth) {
-      stack.pop()
+  messages.forEach((msg, index) => {
+    const path = messages
+      .slice(0, index + 1)
+      .filter(m => m.depth <= msg.depth)
+      .map(m => `${m.author}-${m.timestamp}-${m.depth}`)
+      .join('/');
+
+    const node: MessageNode = {
+      author: msg.author,
+      timestamp: msg.timestamp,
+      content: msg.content,
+      depth: msg.depth,
+      path,
+      children: []
+    };
+    messageMap.set(path, node);
+
+    if (msg.depth === 0) {
+      roots.push(node);
     }
+  });
 
-    if (stack.length === 0) {
-      // Root level message
-      result.push(node)
-    } else {
-      // Add as child to parent
-      stack[stack.length - 1].children!.push(node)
+  // Build tree relationships using paths
+  messages.forEach((msg, index) => {
+    if (msg.depth > 0) {
+      const currentPath = messageMap.get(messages
+        .slice(0, index + 1)
+        .filter(m => m.depth <= msg.depth)
+        .map(m => `${m.author}-${m.timestamp}-${m.depth}`)
+        .join('/')
+      );
+
+      // Find parent by looking at previous messages with depth - 1
+      for (let i = index - 1; i >= 0; i--) {
+        if (messages[i].depth === msg.depth - 1) {
+          const parentPath = messageMap.get(messages
+            .slice(0, i + 1)
+            .filter(m => m.depth <= messages[i].depth)
+            .map(m => `${m.author}-${m.timestamp}-${m.depth}`)
+            .join('/')
+          );
+          
+          if (parentPath && currentPath) {
+            parentPath.children.push(currentPath);
+            break;
+          }
+        }
+      }
     }
-    
-    stack.push(node)
-  })
+  });
 
-  return result
+  return roots;
 } 
