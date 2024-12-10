@@ -59,4 +59,8 @@ export function parseMarkdown(content: string): Thread[] {
 
   if (currentThread) threads.push(currentThread);
   return threads;
+}
+
+export function parseMessage(text: string): string {
+  return text.trim();
 } 

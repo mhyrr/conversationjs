@@ -6,6 +6,7 @@ import { dirname, join } from 'path';
 import fetch from 'node-fetch';
 import { setupViteRewrite } from './vite.middleware.js';
 import fs from 'fs/promises';
+import path from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -316,20 +317,72 @@ function moveMessageToThread(content: string, move: any): string {
 }
 
 app.post('/api/messages/update', async (req, res) => {
+  const { threadTitle, messageAuthor, messageTimestamp, originalContent, newContent } = req.body;
+  console.log('Received update request:', { threadTitle, messageAuthor, messageTimestamp, originalContent, newContent });
+
   try {
-    console.log('Received update request:', req.body);
     const mdPath = join(process.cwd(), 'public/data/conversation.md');
-    console.log('Reading from:', mdPath);
-    
     const content = await fs.readFile(mdPath, 'utf-8');
-    console.log('Current content length:', content.length);
-    
-    const updatedContent = updateMarkdownContent(content, req.body);
-    console.log('Updated content length:', updatedContent.length);
-    
-    await fs.writeFile(mdPath, updatedContent, 'utf-8');
-    console.log('File written successfully');
-    
+    const lines = content.split('\n');
+    let newLines = [];
+    let inTargetThread = false;
+    let messageFound = false;
+    let targetIndent: number | null = null;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      // Handle thread headers
+      if (line.startsWith('### ')) {
+        inTargetThread = line.includes(threadTitle);
+        messageFound = false;
+        targetIndent = null;
+        newLines.push(line);
+        continue;
+      }
+
+      if (!inTargetThread) {
+        newLines.push(line);
+        continue;
+      }
+
+      // Check for message header line
+      const messageMatch = line.match(/^(\s*)- @(\w+) \[(.*?)\]: (.*)$/);
+      
+      if (messageMatch) {
+        const [, indent, author, timestamp, firstContent] = messageMatch;
+        const currentIndent = indent.length;
+
+        // If we found our target message
+        if (author === messageAuthor && 
+            timestamp === messageTimestamp && 
+            firstContent.trim() === originalContent[0].trim()) {
+          console.log('Found target message to update');
+          messageFound = true;
+          targetIndent = currentIndent;
+          // Add the new message header with same indentation
+          newLines.push(`${indent}- @${author} [${timestamp}]: ${newContent[0]}`);
+          // Add remaining content lines with proper indentation
+          for (let j = 1; j < newContent.length; j++) {
+            newLines.push(`${indent}  ${newContent[j]}`);
+          }
+          continue;
+        }
+      } else if (messageFound) {
+        // Skip original content lines until we hit next message or different indent
+        const lineIndent = line.match(/^(\s*)/)?.[1].length || 0;
+        if (lineIndent <= targetIndent! || line.match(/^(\s*)- @/)) {
+          messageFound = false;
+          targetIndent = null;
+          newLines.push(line);
+        }
+        continue;
+      }
+
+      newLines.push(line);
+    }
+
+    await fs.writeFile(mdPath, newLines.join('\n') + '\n');
     res.json({ success: true });
   } catch (err) {
     console.error('Failed to update message:', err);
@@ -393,6 +446,114 @@ app.post('/api/threads/move', async (req, res) => {
   } catch (err) {
     console.error('Failed to move message:', err);
     res.status(500).json({ error: 'Failed to move message' });
+  }
+});
+
+// Add this with the other message endpoints
+app.post('/api/messages/delete', async (req, res) => {
+  const { threadTitle, messageAuthor, messageTimestamp, messageContent } = req.body;
+  console.log('\nDelete request:', { threadTitle, messageAuthor, messageTimestamp, messageContent });
+
+  try {
+    const filePath = path.join(__dirname, '../public/data/conversation.md');
+    let content = await fs.readFile(filePath, 'utf8');
+    
+    const lines = content.split('\n');
+    let newLines = [];
+    let inTargetThread = false;
+    let skipMode = false;
+    let targetIndent: number | null = null;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      // Reset state on thread headers
+      if (line.startsWith('### ')) {
+        inTargetThread = line.includes(threadTitle);
+        console.log(`Thread header: "${line}" - inTargetThread: ${inTargetThread}`);
+        skipMode = false;
+        targetIndent = null;
+        newLines.push(line);
+        continue;
+      }
+
+      if (!inTargetThread) {
+        newLines.push(line);
+        continue;
+      }
+
+      // Check for message header line
+      const messageMatch = line.match(/^(\s*)- @(\w+) \[(.*?)\]: (.*)$/);
+      
+      if (messageMatch) {
+        const [, indent, author, timestamp, firstContent] = messageMatch;
+        const currentIndent = indent.length;
+
+        console.log('\nChecking message:', {
+          author,
+          timestamp,
+          firstContent,
+          targetContent: messageContent[0],
+          indent: currentIndent,
+          targetIndent,
+          skipMode,
+          line
+        });
+
+        // If we found our target message
+        if (author === messageAuthor && 
+            timestamp === messageTimestamp && 
+            firstContent.trim() === messageContent[0].trim() && 
+            (targetIndent === null || currentIndent === targetIndent)) {
+          console.log('Found target message to delete');
+          skipMode = true;
+          targetIndent = currentIndent;
+          continue;
+        }
+
+        // If we hit any message at same or lower indent level, stop skipping
+        if (skipMode && currentIndent <= targetIndent!) {
+          console.log('Stopping skip mode - hit same/lower indent level');
+          skipMode = false;
+          targetIndent = null;
+        }
+      } else if (skipMode) {
+        // For non-message lines, check indentation
+        const lineIndent = line.match(/^(\s*)/)?.[1].length || 0;
+        console.log('Checking non-message line indent:', { 
+          lineIndent, 
+          targetIndent, 
+          line 
+        });
+        
+        if (lineIndent <= targetIndent!) {
+          console.log('Stopping skip mode - non-message line at same/lower indent');
+          skipMode = false;
+          targetIndent = null;
+        }
+      }
+
+      if (!skipMode) {
+        newLines.push(line);
+      } else {
+        console.log('Skipping line:', line);
+      }
+    }
+
+    // Clean up blank lines
+    const cleanedLines = newLines.reduce((acc, line, i) => {
+      if (line.trim() || (i > 0 && i < newLines.length - 1 && 
+          (newLines[i-1].trim() || newLines[i+1].trim()))) {
+        acc.push(line);
+      }
+      return acc;
+    }, [] as string[]);
+
+    await fs.writeFile(filePath, cleanedLines.join('\n') + '\n');
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting message:', error);
+    res.status(500).json({ error: 'Failed to delete message' });
   }
 });
 
