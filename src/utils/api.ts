@@ -2,6 +2,7 @@ interface MessageUpdate {
   threadTitle: string;
   messageAuthor: string;
   messageTimestamp: string;
+  originalContent: string[];
   newContent: string[];
 }
 
@@ -77,6 +78,40 @@ export async function moveToThread(move: MoveToThread): Promise<boolean> {
       body: JSON.stringify(move)
     });
     return response.ok;
+  }
+  return false;
+}
+
+export async function deleteMessage({
+  threadTitle,
+  messageAuthor,
+  messageTimestamp,
+  messageContent
+}: {
+  threadTitle: string;
+  messageAuthor: string;
+  messageTimestamp: string;
+  messageContent: string[];
+}): Promise<boolean> {
+  if (import.meta.env.DEV) {
+    try {
+      const response = await fetch(`${DEV_API_URL}/api/messages/delete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          threadTitle,
+          messageAuthor,
+          messageTimestamp,
+          messageContent
+        }),
+      });
+      return response.ok;
+    } catch (error) {
+      console.error('Failed to delete message:', error);
+      return false;
+    }
   }
   return false;
 } 

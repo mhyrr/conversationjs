@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { MessageNode } from '../utils/tree'
 import { createMessageKey } from '../utils/keys'
 import { getCurrentUser } from '../utils/auth'
-import { updateMessage, replyToMessage, moveToThread } from '../utils/api'
+import { updateMessage, replyToMessage, moveToThread, deleteMessage } from '../utils/api'
 
 interface MessageProps {
   message: MessageNode;
@@ -28,6 +28,7 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
       threadTitle,
       messageAuthor: message.author,
       messageTimestamp: message.timestamp,
+      originalContent: message.content,
       newContent: editContent.split('\n')
     });
 
@@ -35,6 +36,7 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
       threadTitle,
       messageAuthor: message.author,
       messageTimestamp: message.timestamp,
+      originalContent: message.content,
       newContent: editContent.split('\n')
     });
 
@@ -95,6 +97,23 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
     }
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this message?')) {
+      return;
+    }
+
+    const success = await deleteMessage({
+      threadTitle,
+      messageAuthor: message.author,
+      messageTimestamp: message.timestamp,
+      messageContent: message.content
+    });
+
+    if (success) {
+      onUpdate?.();
+    }
+  };
+
   return (
     <div className="message-group" data-depth={message.depth}>
       <div className="message-content">
@@ -114,9 +133,14 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
             {currentUser && (
               <div className="message-actions">
                 {isOwnMessage ? (
-                  <button onClick={() => setIsEditing(true)} className="text-blue-500 text-sm ml-2">
-                    Edit
-                  </button>
+                  <>
+                    <button onClick={() => setIsEditing(true)} className="text-blue-500 text-sm ml-2">
+                      Edit
+                    </button>
+                    <button onClick={handleDelete} className="text-red-500 text-sm ml-2">
+                      Delete
+                    </button>
+                  </>
                 ) : (
                   <>
                     <button onClick={() => setIsReplying(true)} className="text-blue-500 text-sm ml-2">
