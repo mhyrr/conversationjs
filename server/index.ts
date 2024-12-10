@@ -124,25 +124,28 @@ function addReplyToMarkdown(content: string, reply: any): string {
 
   while (currentLine < lines.length) {
     const line = lines[currentLine];
-    newLines.push(line);
 
     // Handle thread headers
     if (line.startsWith('### ')) {
-      console.log(`Found thread header: "${line.trim()}", target: ${reply.threadTitle}`);
-      if (inTargetThread) {
-        // If we're in our target thread and hit a new header, we're done
-        console.log('Hit next thread header, stopping');
-        newLines.push(...lines.slice(currentLine + 1));
+      if (inTargetThread && !parentFound) {
+        // If we hit a new thread header without finding parent, keep looking
+        inTargetThread = line.includes(reply.threadTitle);
+      } else if (inTargetThread && parentFound) {
+        // If we found parent and hit new header, we're done
+        console.log('Hit next thread header after finding parent, stopping');
+        newLines.push(...lines.slice(currentLine));
         break;
+      } else {
+        // Not in target thread yet, check if this is our thread
+        inTargetThread = line.includes(reply.threadTitle);
       }
-      inTargetThread = line.includes(reply.threadTitle);
-      parentFound = false;
-      parentIndent = null;
+      newLines.push(line);
       currentLine++;
       continue;
     }
 
     if (!inTargetThread) {
+      newLines.push(line);
       currentLine++;
       continue;
     }
@@ -151,30 +154,26 @@ function addReplyToMarkdown(content: string, reply: any): string {
     const messageMatch = line.match(/^(\s*)- @(\w+) \[(.*?)Z?\]: /);
     if (messageMatch) {
       const [, indent, author, timestamp] = messageMatch;
-      console.log('Checking message:', { author, timestamp, indent: indent.length });
       
       if (author === reply.parentAuthor && timestamp === reply.parentTimestamp) {
         console.log('Found parent message');
         parentFound = true;
         parentIndent = indent.length;
+        newLines.push(line);
         
         // Skip to end of parent message content
         while (currentLine + 1 < lines.length) {
           const nextLine = lines[currentLine + 1];
-          console.log('Checking next line:', nextLine);
-
+          
           // Stop if we hit a thread header
           if (nextLine.startsWith('### ')) {
-            console.log('Hit thread header, stopping content collection');
             break;
           }
 
           const nextMatch = nextLine.match(/^(\s*)- @/);
           if (nextMatch) {
             const nextIndent = nextMatch[1].length;
-            console.log('Found next message with indent:', nextIndent);
             if (nextIndent <= parentIndent) {
-              console.log('Next message is sibling or parent, stopping here');
               break;
             }
           }
@@ -184,7 +183,6 @@ function addReplyToMarkdown(content: string, reply: any): string {
 
         // Add the reply with proper indentation
         const replyIndent = ' '.repeat(parentIndent + 2);
-        console.log('Adding reply with indent:', parentIndent + 2);
         newLines.push('');
         newLines.push(`${replyIndent}- @${reply.author} [${reply.timestamp}]: ${reply.content[0]}`);
         
@@ -192,8 +190,12 @@ function addReplyToMarkdown(content: string, reply: any): string {
           newLines.push(`${replyIndent}  ${reply.content[j]}`);
         }
         newLines.push('');
+        currentLine++;
+        continue;
       }
     }
+
+    newLines.push(line);
     currentLine++;
   }
 
@@ -202,7 +204,7 @@ function addReplyToMarkdown(content: string, reply: any): string {
 
 // Helper to create a new thread
 function createNewThread(content: string, thread: any): string {
-  console.log('Creating new thread:', thread.title);
+  console.log('Creating new thread:', thread);
   const lines = content.split('\n');
   const newLines: string[] = [];
   let addedThread = false;
@@ -224,7 +226,9 @@ function createNewThread(content: string, thread: any): string {
       
       // Add initial message if provided
       if (thread.initialMessage) {
-        newLines.push(`- @${thread.initialMessage.author} [${new Date().toISOString().split('T')[0]}]: ${thread.initialMessage.content[0]}`);
+        const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
+        newLines.push(`- @${thread.initialMessage.author} [${timestamp}]: ${thread.initialMessage.content[0]}`);
+        // Add any additional content lines with proper indentation
         for (let j = 1; j < thread.initialMessage.content.length; j++) {
           newLines.push(`  ${thread.initialMessage.content[j]}`);
         }
@@ -258,38 +262,50 @@ function moveMessageToThread(content: string, move: any): string {
   let inSourceThread = false;
   let foundTarget = false;
   let targetIndent = 0;
+  let currentLine = 0;
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+  // First pass: collect the message and its replies
+  while (currentLine < lines.length) {
+    const line = lines[currentLine];
 
     // Handle thread headers
     if (line.startsWith('### ')) {
       inSourceThread = line.includes(move.sourceThreadTitle);
+      if (foundTarget) {
+        // If we've found and collected our target message, add remaining lines and break
+        newLines.push(...lines.slice(currentLine));
+        break;
+      }
       newLines.push(line);
+      currentLine++;
       continue;
     }
 
     if (inSourceThread) {
-      const messageMatch = line.match(/^(\s*)- @(\w+) \[(.*?)\]: (.*)/);
+      const messageMatch = line.match(/^(\s*)- @(\w+) \[(.*?)Z?\]: (.*)/);
       if (messageMatch) {
-        const [, indent, author, timestamp, firstContent] = messageMatch;
+        const [, indent, author, timestamp, content] = messageMatch;
         const indentLength = indent ? indent.length : 0;
 
         // If we found our target message
         if (!foundTarget && 
             author === move.messageAuthor && 
-            timestamp === move.messageTimestamp && 
-            firstContent.trim() === move.messageContent[0]) {
+            timestamp === move.messageTimestamp) {
           console.log('Found target message:', line);
           foundTarget = true;
           targetIndent = indentLength;
-          movedLines.push(line.trimStart()); // Remove indentation for new thread
+          // Store without indentation
+          movedLines.push(`- @${author} [${timestamp}]: ${content}`);
+          currentLine++;
           continue;
         }
 
         // If this is a child of our target message (more indented)
         if (foundTarget && indentLength > targetIndent) {
-          movedLines.push(line);
+          // Adjust indentation relative to new parent
+          const newIndent = ' '.repeat((indentLength - targetIndent));
+          movedLines.push(`${newIndent}- @${author} [${timestamp}]: ${content}`);
+          currentLine++;
           continue;
         }
 
@@ -297,17 +313,25 @@ function moveMessageToThread(content: string, move: any): string {
         if (foundTarget && indentLength <= targetIndent) {
           foundTarget = false;
         }
+      } else if (foundTarget && line.trim()) {
+        // Handle continued lines with adjusted indentation
+        const indentMatch = line.match(/^(\s*)/);
+        const lineIndent = indentMatch ? indentMatch[1].length : 0;
+        if (lineIndent > targetIndent) {
+          const newIndent = ' '.repeat(lineIndent - targetIndent);
+          movedLines.push(`${newIndent}${line.trim()}`);
+        } else {
+          movedLines.push(line.trim());
+        }
+        currentLine++;
+        continue;
       }
+    }
 
-      // Handle continued lines and blank lines
-      if (foundTarget) {
-        movedLines.push(line);
-      } else {
-        newLines.push(line);
-      }
-    } else {
+    if (!foundTarget) {
       newLines.push(line);
     }
+    currentLine++;
   }
 
   // Add the new thread with moved content
