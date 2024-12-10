@@ -28,7 +28,6 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
       threadTitle,
       messageAuthor: message.author,
       messageTimestamp: message.timestamp,
-      originalContent: message.content,
       newContent: editContent.split('\n')
     });
 
@@ -36,7 +35,6 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
       threadTitle,
       messageAuthor: message.author,
       messageTimestamp: message.timestamp,
-      originalContent: message.content,
       newContent: editContent.split('\n')
     });
 
@@ -50,6 +48,8 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
 
   const handleReply = async () => {
     if (!currentUser) return;
+
+    const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
 
     console.log('Replying to message:', {
       threadTitle,
@@ -66,7 +66,8 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
       parentTimestamp: message.timestamp,
       parentContent: message.content,
       content: replyContent.split('\n'),
-      author: currentUser.login
+      author: currentUser.login,
+      timestamp
     });
 
     console.log('Reply response:', success);
@@ -105,8 +106,7 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
     const success = await deleteMessage({
       threadTitle,
       messageAuthor: message.author,
-      messageTimestamp: message.timestamp,
-      messageContent: message.content
+      messageTimestamp: message.timestamp
     });
 
     if (success) {
@@ -118,7 +118,7 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
     <div className="message-group" data-depth={message.depth}>
       <div className="message-content">
         <div className="message-header">
-          {message.children.length > 0 && (
+          {message.children?.length > 0 && (
             <button 
               className="collapse-toggle"
               onClick={() => setIsCollapsed(!isCollapsed)}
@@ -199,11 +199,11 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
           </div>
         )}
       </div>
-      {message.children.length > 0 && (
+      {message.children?.length > 0 && (
         <div className={`message-replies ${isCollapsed ? 'collapsed' : ''}`}>
           {message.children.map((child) => (
             <Message 
-              key={createMessageKey(child)}
+              key={child.path}
               message={child}
               threadTitle={threadTitle}
               onUpdate={onUpdate}

@@ -102,93 +102,99 @@ function updateMarkdownContent(content: string, update: any): string {
 
 // Helper to add a reply to markdown content
 function addReplyToMarkdown(content: string, reply: any): string {
-  console.log('Adding reply in thread:', reply.threadTitle);
-  console.log('Looking for parent content:', reply.parentContent);
+  console.log('\nAdding reply:', {
+    thread: reply.threadTitle,
+    parent: {
+      author: reply.parentAuthor,
+      timestamp: reply.parentTimestamp
+    },
+    reply: {
+      author: reply.author,
+      timestamp: reply.timestamp,
+      content: reply.content
+    }
+  });
   
   const lines = content.split('\n');
+  let newLines = [];
   let inTargetThread = false;
-  let collectingContent = false;
-  let currentContent: string[] = [];
-  let replyAdded = false;
-  let lastIndent = 0;
-  const newLines: string[] = [];
+  let parentFound = false;
+  let parentIndent: number | null = null;
+  let currentLine = 0;
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const nextLine = lines[i + 1] || '';
-    
-    // Check for thread title
-    if (line.startsWith('### ')) {
-      inTargetThread = line.includes(reply.threadTitle);
-      collectingContent = false;
-      currentContent = [];
-      console.log('Found thread:', line, 'isTarget:', inTargetThread);
-      newLines.push(line);
-      continue;
-    }
-
-    // Process message lines
-    const messageMatch = line.match(/^(\s*)- @(\w+) \[(.*?)\]: (.*)/);
-    if (messageMatch) {
-      // If we were collecting content, check if it matches
-      if (collectingContent) {
-        console.log('Comparing collected content:', currentContent, 'with parent:', reply.parentContent);
-        if (JSON.stringify(currentContent) === JSON.stringify(reply.parentContent) && !replyAdded) {
-          // Add reply before moving to next message
-          const replyIndent = ' '.repeat(lastIndent + 2);
-          newLines.push(`${replyIndent}- @${reply.author} [${new Date().toISOString().split('T')[0]}]: ${reply.content[0]}`);
-          for (let j = 1; j < reply.content.length; j++) {
-            newLines.push(`${replyIndent}  ${reply.content[j]}`);
-          }
-          replyAdded = true;
-          console.log('Added reply after matching content');
-        }
-      }
-
-      // Start collecting new message content if it matches author and timestamp
-      const [, indent, author, timestamp, firstLine] = messageMatch;
-      lastIndent = indent.length;
-      if (inTargetThread && 
-          author === reply.parentAuthor && 
-          timestamp === reply.parentTimestamp) {
-        collectingContent = true;
-        currentContent = [firstLine];
-        console.log('Started collecting content for:', author, timestamp);
-      } else {
-        collectingContent = false;
-        currentContent = [];
-      }
-      newLines.push(line);
-      continue;
-    }
-
-    // Collect continued message content
-    if (collectingContent && line.trim() && !line.match(/^\s*- @/)) {
-      currentContent.push(line.trim());
-      console.log('Collected additional line:', line.trim());
-    }
-
+  while (currentLine < lines.length) {
+    const line = lines[currentLine];
     newLines.push(line);
 
-    // Check if we need to add reply after collecting all content
-    if (collectingContent && 
-        !replyAdded && 
-        JSON.stringify(currentContent) === JSON.stringify(reply.parentContent) &&
-        (nextLine.match(/^\s*- @/) || nextLine.startsWith('### ') || !nextLine)) {
-      const replyIndent = ' '.repeat(lastIndent + 2);
-      // Add newline before reply if there isn't one
-      if (newLines[newLines.length - 1].trim() !== '') {
+    // Handle thread headers
+    if (line.startsWith('### ')) {
+      console.log(`Found thread header: "${line.trim()}", target: ${reply.threadTitle}`);
+      if (inTargetThread) {
+        // If we're in our target thread and hit a new header, we're done
+        console.log('Hit next thread header, stopping');
+        newLines.push(...lines.slice(currentLine + 1));
+        break;
+      }
+      inTargetThread = line.includes(reply.threadTitle);
+      parentFound = false;
+      parentIndent = null;
+      currentLine++;
+      continue;
+    }
+
+    if (!inTargetThread) {
+      currentLine++;
+      continue;
+    }
+
+    // Check for parent message
+    const messageMatch = line.match(/^(\s*)- @(\w+) \[(.*?)Z?\]: /);
+    if (messageMatch) {
+      const [, indent, author, timestamp] = messageMatch;
+      console.log('Checking message:', { author, timestamp, indent: indent.length });
+      
+      if (author === reply.parentAuthor && timestamp === reply.parentTimestamp) {
+        console.log('Found parent message');
+        parentFound = true;
+        parentIndent = indent.length;
+        
+        // Skip to end of parent message content
+        while (currentLine + 1 < lines.length) {
+          const nextLine = lines[currentLine + 1];
+          console.log('Checking next line:', nextLine);
+
+          // Stop if we hit a thread header
+          if (nextLine.startsWith('### ')) {
+            console.log('Hit thread header, stopping content collection');
+            break;
+          }
+
+          const nextMatch = nextLine.match(/^(\s*)- @/);
+          if (nextMatch) {
+            const nextIndent = nextMatch[1].length;
+            console.log('Found next message with indent:', nextIndent);
+            if (nextIndent <= parentIndent) {
+              console.log('Next message is sibling or parent, stopping here');
+              break;
+            }
+          }
+          currentLine++;
+          newLines.push(nextLine);
+        }
+
+        // Add the reply with proper indentation
+        const replyIndent = ' '.repeat(parentIndent + 2);
+        console.log('Adding reply with indent:', parentIndent + 2);
+        newLines.push('');
+        newLines.push(`${replyIndent}- @${reply.author} [${reply.timestamp}]: ${reply.content[0]}`);
+        
+        for (let j = 1; j < reply.content.length; j++) {
+          newLines.push(`${replyIndent}  ${reply.content[j]}`);
+        }
         newLines.push('');
       }
-      newLines.push(`${replyIndent}- @${reply.author} [${new Date().toISOString().split('T')[0]}]: ${reply.content[0]}`);
-      for (let j = 1; j < reply.content.length; j++) {
-        newLines.push(`${replyIndent}  ${reply.content[j]}`);
-      }
-      // Add newline after reply
-      newLines.push('');
-      replyAdded = true;
-      console.log('Added reply after full content match');
     }
+    currentLine++;
   }
 
   return newLines.join('\n');
@@ -317,8 +323,8 @@ function moveMessageToThread(content: string, move: any): string {
 }
 
 app.post('/api/messages/update', async (req, res) => {
-  const { threadTitle, messageAuthor, messageTimestamp, originalContent, newContent } = req.body;
-  console.log('Received update request:', { threadTitle, messageAuthor, messageTimestamp, originalContent, newContent });
+  const { threadTitle, messageAuthor, messageTimestamp, newContent } = req.body;
+  console.log('Received update request:', { threadTitle, messageAuthor, messageTimestamp, newContent });
 
   try {
     const mdPath = join(process.cwd(), 'public/data/conversation.md');
@@ -347,16 +353,14 @@ app.post('/api/messages/update', async (req, res) => {
       }
 
       // Check for message header line
-      const messageMatch = line.match(/^(\s*)- @(\w+) \[(.*?)\]: (.*)$/);
+      const messageMatch = line.match(/^(\s*)- @(\w+) \[(.*?)Z?\]: /);
       
       if (messageMatch) {
-        const [, indent, author, timestamp, firstContent] = messageMatch;
+        const [, indent, author, timestamp] = messageMatch;
         const currentIndent = indent.length;
 
         // If we found our target message
-        if (author === messageAuthor && 
-            timestamp === messageTimestamp && 
-            firstContent.trim() === originalContent[0].trim()) {
+        if (author === messageAuthor && timestamp === messageTimestamp) {
           console.log('Found target message to update');
           messageFound = true;
           targetIndent = currentIndent;
@@ -451,8 +455,8 @@ app.post('/api/threads/move', async (req, res) => {
 
 // Add this with the other message endpoints
 app.post('/api/messages/delete', async (req, res) => {
-  const { threadTitle, messageAuthor, messageTimestamp, messageContent } = req.body;
-  console.log('\nDelete request:', { threadTitle, messageAuthor, messageTimestamp, messageContent });
+  const { threadTitle, messageAuthor, messageTimestamp } = req.body;
+  console.log('\nDelete request:', { threadTitle, messageAuthor, messageTimestamp });
 
   try {
     const filePath = path.join(__dirname, '../public/data/conversation.md');
@@ -467,10 +471,8 @@ app.post('/api/messages/delete', async (req, res) => {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
 
-      // Reset state on thread headers
       if (line.startsWith('### ')) {
         inTargetThread = line.includes(threadTitle);
-        console.log(`Thread header: "${line}" - inTargetThread: ${inTargetThread}`);
         skipMode = false;
         targetIndent = null;
         newLines.push(line);
@@ -482,52 +484,25 @@ app.post('/api/messages/delete', async (req, res) => {
         continue;
       }
 
-      // Check for message header line
-      const messageMatch = line.match(/^(\s*)- @(\w+) \[(.*?)\]: (.*)$/);
+      const messageMatch = line.match(/^(\s*)- @(\w+) \[(.*?)Z?\]: /);
       
       if (messageMatch) {
-        const [, indent, author, timestamp, firstContent] = messageMatch;
+        const [, indent, author, timestamp] = messageMatch;
         const currentIndent = indent.length;
 
-        console.log('\nChecking message:', {
-          author,
-          timestamp,
-          firstContent,
-          targetContent: messageContent[0],
-          indent: currentIndent,
-          targetIndent,
-          skipMode,
-          line
-        });
-
-        // If we found our target message
-        if (author === messageAuthor && 
-            timestamp === messageTimestamp && 
-            firstContent.trim() === messageContent[0].trim() && 
-            (targetIndent === null || currentIndent === targetIndent)) {
-          console.log('Found target message to delete');
+        if (author === messageAuthor && timestamp === messageTimestamp) {
           skipMode = true;
           targetIndent = currentIndent;
           continue;
         }
 
-        // If we hit any message at same or lower indent level, stop skipping
         if (skipMode && currentIndent <= targetIndent!) {
-          console.log('Stopping skip mode - hit same/lower indent level');
           skipMode = false;
           targetIndent = null;
         }
       } else if (skipMode) {
-        // For non-message lines, check indentation
         const lineIndent = line.match(/^(\s*)/)?.[1].length || 0;
-        console.log('Checking non-message line indent:', { 
-          lineIndent, 
-          targetIndent, 
-          line 
-        });
-        
         if (lineIndent <= targetIndent!) {
-          console.log('Stopping skip mode - non-message line at same/lower indent');
           skipMode = false;
           targetIndent = null;
         }
@@ -535,12 +510,9 @@ app.post('/api/messages/delete', async (req, res) => {
 
       if (!skipMode) {
         newLines.push(line);
-      } else {
-        console.log('Skipping line:', line);
       }
     }
 
-    // Clean up blank lines
     const cleanedLines = newLines.reduce((acc, line, i) => {
       if (line.trim() || (i > 0 && i < newLines.length - 1 && 
           (newLines[i-1].trim() || newLines[i+1].trim()))) {

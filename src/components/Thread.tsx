@@ -11,41 +11,31 @@ import { buildMessageTree } from '../utils/tree'
 import { createMessageKey } from '../utils/keys'
 
 interface ThreadProps {
-  thread: Thread  // Thread data including title and messages
+  thread: Thread;
+  onUpdate: () => void;
 }
 
-export function Thread({ thread }: ThreadProps) {
-  // State for thread collapse/expand
-  const [isCollapsed, setIsCollapsed] = useState(false)
-  // Convert flat message array to nested tree structure
-  const messageTree = buildMessageTree(thread.messages)
-  const [key, setKey] = useState(0) // Add refresh key
-  
-  const handleUpdate = () => {
-    setKey(k => k + 1) // Force refresh on update
-  }
-  
+export function Thread({ thread, onUpdate }: ThreadProps) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const messageTree = buildMessageTree(thread.messages);
+
   return (
     <div className="thread">
-      <h3 
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="thread-title"
-      >
-        <span className="collapse-icon">
-          {isCollapsed ? '▸' : '▾'}  {/* Toggle arrow based on state */}
-        </span>
-        {thread.title}
-      </h3>
+      <div className="thread-title" onClick={() => setIsCollapsed(!isCollapsed)}>
+        <span className="collapse-icon">{isCollapsed ? '▸' : '▾'}</span>
+        <h3>{thread.title}</h3>
+      </div>
+      
       <div className={`thread-messages ${isCollapsed ? 'collapsed' : ''}`}>
         {messageTree.map((message) => (
-          <Message 
-            key={`${createMessageKey(message)}-${key}`}
+          <Message
+            key={`${message.author}-${message.timestamp}-${message.depth}`}
             message={message}
             threadTitle={thread.title}
-            onUpdate={handleUpdate}
+            onUpdate={onUpdate}
           />
         ))}
       </div>
     </div>
-  )
+  );
 } 
