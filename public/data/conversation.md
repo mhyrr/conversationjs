@@ -4,15 +4,17 @@
 
 I find it particularly interesting that we can't even definitively say whether consciousness is continuous or discrete. Do we experience reality in frames, like a movie, or in a continuous stream? The evidence seems mixed.
 
-- @user2 [2024-03-21]: The frame-based theory of consciousness is fascinating, but I think it misses a crucial point about the nature of subjective experience. When we talk about qualia, we're not just discussing temporal resolution, but the fundamental nature of experience itself.
+
+- @mhyrr [2024-03-21]: The frame-based theory of consciousness is fascinating, but I think it misses a crucial point about the nature of subjective experience. When we talk about qualia, we're not just discussing temporal resolution, but the fundamental nature of experience itself.
 
   Consider how memory interfaces with consciousness. We don't remember continuous streams, but rather key moments and transitions. This suggests our experience might be more quantized than we imagine.
 
   - @user1 [2024-03-21]: That's an interesting connection to memory, but couldn't that be more about storage efficiency than the nature of consciousness itself? After all, our visual system processes massive amounts of information continuously, most of which never reaches conscious awareness.
 
-    - @user2 [2024-03-21]: The filtering mechanism you're describing might actually be the key to understanding consciousness. What if consciousness isn't a property or state, but rather a process of information integration and exclusion? This aligns with Integrated Information Theory, though I have some reservations about its mathematical formalization.
+    - @mhyrr [2024-03-21]: The filtering mechanism you're describing might actually be the key to understanding consciousness. What if consciousness isn't a property or state, but rather a process of information integration and exclusion? This aligns with Integrated Information Theory, though I have some reservations about its mathematical formalization.
 
       - @user1 [2024-03-21]: The mathematical approach to consciousness always struck me as putting the cart before the horse. How can we quantify something we can't even properly define? IIT makes interesting predictions, but its fundamental axioms seem more like assumptions about the nature of consciousness than derived principles.
+
 
 ### The Role of Technology in Human Evolution
 
