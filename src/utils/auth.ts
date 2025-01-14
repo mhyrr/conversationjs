@@ -2,8 +2,7 @@ import participants from '../../participants.json';
 
 export interface GithubUser {
   login: string;
-  name?: string;
-  avatar_url: string;
+  accessToken: string;
 }
 
 export class NotParticipantError extends Error {
@@ -31,14 +30,9 @@ export async function authenticateWithGithub(): Promise<GithubUser | null> {
 }
 
 export function getCurrentUser(): GithubUser | null {
-  const userStr = localStorage.getItem('github_user');
-  if (!userStr) return null;
-  
-  const user = JSON.parse(userStr);
-  if (!isAuthorizedUser(user.login)) {
-    throw new NotParticipantError(user.login);
-  }
-  return user;
+  const userJson = localStorage.getItem('github_user');
+  if (!userJson) return null;
+  return JSON.parse(userJson);
 }
 
 export function logout(): void {

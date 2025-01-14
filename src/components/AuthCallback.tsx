@@ -27,20 +27,30 @@ export function AuthCallback() {
           });
 
           const data = await response.json();
-          if (data.access_token) {
-            localStorage.setItem('github_token', data.access_token);
-            
-            const userResponse = await fetch('https://api.github.com/user', {
-              headers: {
-                'Authorization': `token ${data.access_token}`,
-                'Accept': 'application/vnd.github.v3+json'
-              }
-            });
-            
-            if (userResponse.ok) {
-              const userData = await userResponse.json();
-              localStorage.setItem('github_user', JSON.stringify(userData));
+          const accessToken = data.access_token;
+          
+          const userResponse = await fetch('https://api.github.com/user', {
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Accept': 'application/vnd.github.v3+json'
             }
+          });
+          
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            
+            // Check if user is authorized before storing credentials
+            if (!isAuthorizedUser(userData.login)) {
+              alert(`Sorry, ${userData.login} is not a participant in this conversation - take a look at the participants.json file`);
+              navigate('/');
+              return;
+            }
+            
+            localStorage.setItem('github_token', accessToken);
+            localStorage.setItem('github_user', JSON.stringify({
+              login: userData.login,
+              accessToken
+            }));
           }
         } else {
           const response = await fetch('http://localhost:3000/auth/token', {
@@ -52,27 +62,30 @@ export function AuthCallback() {
           });
 
           const data = await response.json();
-          if (data.access_token) {
-            const userResponse = await fetch('https://api.github.com/user', {
-              headers: {
-                'Authorization': `token ${data.access_token}`,
-                'Accept': 'application/vnd.github.v3+json'
-              }
-            });
-            
-            if (userResponse.ok) {
-              const userData = await userResponse.json();
-              
-              // Check if user is authorized before storing credentials
-              if (!isAuthorizedUser(userData.login)) {
-                alert(`Sorry, ${userData.login} is not a participant in this conversation - take a look at the participants.json file`);
-                navigate('/');
-                return;
-              }
-              
-              localStorage.setItem('github_token', data.access_token);
-              localStorage.setItem('github_user', JSON.stringify(userData));
+          const accessToken = data.access_token;
+          
+          const userResponse = await fetch('https://api.github.com/user', {
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Accept': 'application/vnd.github.v3+json'
             }
+          });
+          
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            
+            // Check if user is authorized before storing credentials
+            if (!isAuthorizedUser(userData.login)) {
+              alert(`Sorry, ${userData.login} is not a participant in this conversation - take a look at the participants.json file`);
+              navigate('/');
+              return;
+            }
+            
+            localStorage.setItem('github_token', accessToken);
+            localStorage.setItem('github_user', JSON.stringify({
+              login: userData.login,
+              accessToken
+            }));
           }
         }
       } catch (error) {
