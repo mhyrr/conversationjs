@@ -34,26 +34,36 @@ export function parseMarkdown(content: string): Thread[] {
   let currentMessage: Message | null = null;
 
   lines.forEach((line) => {
+    // Handle thread headers
     if (line.startsWith('### ')) {
       if (currentThread) threads.push(currentThread);
       currentThread = {
-        title: line.replace('### ', '').replace(/ \[.*\]/, ''),
+        title: line.replace('### ', ''),
         messages: []
       };
-    } else if (line.match(/^\s*- @/)) {
-      const indentLevel = (line.match(/^\s*/) ?? [''])[0].length / 2;
-      const match = line.match(/- @(\w+) \[(.*?)T(.*?)Z?\]: (.*)/);
-      if (match && currentThread) {
-        const [, author, date, time, content] = match;
-        currentMessage = {
-          author,
-          timestamp: `${date}T${time}`,
-          content: [content],
-          depth: indentLevel
-        };
-        currentThread.messages.push(currentMessage);
-      }
+      return;
+    }
+
+    // Skip if no current thread
+    if (!currentThread) return;
+
+    // Handle message lines
+    const messageMatch = line.match(/^(\s*)- @(\w+) \[(.*?)Z?\]: (.*)/);
+    if (messageMatch) {
+      const [, indent, author, timestamp, content] = messageMatch;
+      const depth = (indent?.length || 0) / 2;
+      
+      currentMessage = {
+        author,
+        timestamp,
+        content: [content],
+        depth
+      };
+      currentThread.messages.push(currentMessage);
     } else if (line.trim() && currentMessage) {
+      // Handle continued message content
+      const indentMatch = line.match(/^(\s*)/);
+      const indent = indentMatch ? indentMatch[1] : '';
       currentMessage.content.push(line.trim());
     }
   });

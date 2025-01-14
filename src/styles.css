@@ -133,9 +133,10 @@ body {
 }
 
 .message-group {
-    margin: 0 0;
+    margin: 0;
     padding: 0.5rem;
     border: none;
+    margin-left: calc(var(--depth, 0) * 2rem);
 }
 
 .message-content {
@@ -152,7 +153,6 @@ body {
     margin-left: 2rem;
     padding-left: 1rem;
     border-left: 2px solid var(--border-color);
-    margin-top: 1rem;
 }
 
 .message-content p {
@@ -169,8 +169,8 @@ body {
 }
 
 .message-paragraph {
-    display: block;
-    margin: 1em 0;
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
 }
 
 .paragraph-actions {

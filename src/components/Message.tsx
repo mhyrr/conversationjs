@@ -194,7 +194,7 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
         ) : (
           <div className={`message-content-body ${isCollapsed ? 'collapsed' : ''}`}>
             {message.content.map((p, i) => (
-              <p key={i}>{p}</p>
+              <p key={i} className="message-paragraph">{p}</p>
             ))}
           </div>
         )}
