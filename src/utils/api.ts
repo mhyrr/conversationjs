@@ -1,3 +1,5 @@
+import { GitHubMessageAPI } from './api/github';
+
 interface MessageUpdate {
   threadTitle: string;
   messageAuthor: string;
@@ -9,6 +11,7 @@ interface MessageReply {
   threadTitle: string;
   parentAuthor: string;
   parentTimestamp: string;
+  parentContent: string[];
   content: string[];
   author: string;
   timestamp: string;
@@ -47,8 +50,10 @@ export async function updateMessage(update: MessageUpdate): Promise<boolean> {
       body: JSON.stringify(update)
     });
     return response.ok;
+  } else {
+    const api = new GitHubMessageAPI();
+    return await api.updateMessage(update);
   }
-  return false;
 }
 
 export async function replyToMessage(reply: MessageReply): Promise<boolean> {
@@ -59,8 +64,10 @@ export async function replyToMessage(reply: MessageReply): Promise<boolean> {
       body: JSON.stringify(reply)
     });
     return response.ok;
+  } else {
+    const api = new GitHubMessageAPI();
+    return await api.replyToMessage(reply);
   }
-  return false;
 }
 
 export async function createThread(thread: NewThread): Promise<boolean> {
@@ -71,8 +78,10 @@ export async function createThread(thread: NewThread): Promise<boolean> {
       body: JSON.stringify(thread)
     });
     return response.ok;
+  } else {
+    const api = new GitHubMessageAPI();
+    return await api.createThread(thread);
   }
-  return false;
 }
 
 export async function moveToThread(move: MoveToThread): Promise<boolean> {
@@ -83,8 +92,10 @@ export async function moveToThread(move: MoveToThread): Promise<boolean> {
       body: JSON.stringify(move)
     });
     return response.ok;
+  } else {
+    const api = new GitHubMessageAPI();
+    return await api.moveToThread(move);
   }
-  return false;
 }
 
 export async function deleteMessage({
@@ -110,6 +121,8 @@ export async function deleteMessage({
       console.error('Failed to delete message:', error);
       return false;
     }
+  } else {
+    const api = new GitHubMessageAPI();
+    return await api.deleteMessage({ threadTitle, messageAuthor, messageTimestamp });
   }
-  return false;
 } 
