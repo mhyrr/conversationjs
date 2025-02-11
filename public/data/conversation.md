@@ -5,6 +5,9 @@
 I find it particularly interesting that we can't even definitively say whether consciousness is continuous or discrete. Do we experience reality in frames, like a movie, or in a continuous stream? The evidence seems mixed.
 
 
+
+  - @mhyrr [2025-02-11T21:45:59Z]: test
+
 - @mhyrr [2024-03-21]: The frame-based theory of consciousness is fascinating, but I think it misses a crucial point about the nature of subjective experience. When we talk about qualia, we're not just discussing temporal resolution, but the fundamental nature of experience itself.
 
   Consider how memory interfaces with consciousness. We don't remember continuous streams, but rather key moments and transitions. This suggests our experience might be more quantized than we imagine.
@@ -15,6 +18,9 @@ I find it particularly interesting that we can't even definitively say whether c
 
       - @user1 [2024-03-21]: The mathematical approach to consciousness always struck me as putting the cart before the horse. How can we quantify something we can't even properly define? IIT makes interesting predictions, but its fundamental axioms seem more like assumptions about the nature of consciousness than derived principles.
 
+
+
+    - @mhyrr [2025-02-11T21:45:59Z]: test
 
 ### The Role of Technology in Human Evolution
 
