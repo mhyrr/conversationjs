@@ -149,60 +149,61 @@ export function moveMessageToThread(content: string, move: MessageMove): string 
   const movedLines: string[] = [];
   let inSourceThread = false;
   let foundTarget = false;
-  let targetIndent = 0;
+  let targetIndent: number | null = null;
   let currentLine = 0;
 
+  // First pass: collect the message and its children while removing from source
   while (currentLine < lines.length) {
     const line = lines[currentLine];
 
     if (line.startsWith('### ')) {
       inSourceThread = line.includes(move.sourceThreadTitle);
-      if (foundTarget) {
-        newLines.push(...lines.slice(currentLine));
-        break;
-      }
       newLines.push(line);
       currentLine++;
       continue;
     }
 
-    if (inSourceThread) {
-      const messageMatch = line.match(/^(\s*)- @(\w+) \[(.*?)Z?\]: (.*)/);
-      if (messageMatch) {
-        const [, indent, author, timestamp, content] = messageMatch;
-        const indentLength = indent ? indent.length : 0;
+    if (!inSourceThread) {
+      newLines.push(line);
+      currentLine++;
+      continue;
+    }
 
-        if (!foundTarget && 
-            author === move.messageAuthor && 
-            timestamp === move.messageTimestamp) {
-          foundTarget = true;
-          targetIndent = indentLength;
-          movedLines.push(`- @${author} [${timestamp}]: ${content}`);
-          currentLine++;
-          continue;
-        }
+    const messageMatch = line.match(/^(\s*)- @(\w+) \[(.*?)Z?\]: (.*)/);
+    if (messageMatch) {
+      const [, indent, author, timestamp] = messageMatch;
+      const indentLength = indent ? indent.length : 0;
 
-        if (foundTarget && indentLength > targetIndent) {
-          const newIndent = ' '.repeat((indentLength - targetIndent));
-          movedLines.push(`${newIndent}- @${author} [${timestamp}]: ${content}`);
-          currentLine++;
-          continue;
-        }
-
-        if (foundTarget && indentLength <= targetIndent) {
-          foundTarget = false;
-        }
-      } else if (foundTarget && line.trim()) {
-        const indentMatch = line.match(/^(\s*)/);
-        const lineIndent = indentMatch ? indentMatch[1].length : 0;
-        if (lineIndent > targetIndent) {
-          const newIndent = ' '.repeat(lineIndent - targetIndent);
-          movedLines.push(`${newIndent}${line.trim()}`);
-        } else {
-          movedLines.push(line.trim());
-        }
+      if (!foundTarget && author === move.messageAuthor && timestamp === move.messageTimestamp) {
+        foundTarget = true;
+        targetIndent = indentLength;
+        movedLines.push(line);
         currentLine++;
         continue;
+      }
+
+      if (foundTarget) {
+        if (indentLength > targetIndent!) {
+          // This is a child message, include it
+          movedLines.push(line);
+          currentLine++;
+          continue;
+        } else {
+          // Same or lower indent level - no longer a child
+          foundTarget = false;
+          targetIndent = null;
+        }
+      }
+    } else if (foundTarget) {
+      // Handle content lines of the current message or its children
+      const lineIndent = line.match(/^(\s*)/)?.[1].length || 0;
+      if (lineIndent > targetIndent!) {
+        movedLines.push(line);
+        currentLine++;
+        continue;
+      } else {
+        foundTarget = false;
+        targetIndent = null;
       }
     }
 
@@ -212,6 +213,7 @@ export function moveMessageToThread(content: string, move: MessageMove): string 
     currentLine++;
   }
 
+  // Add the moved content to the new thread
   if (newLines[newLines.length - 1].trim() !== '') {
     newLines.push('');
   }
