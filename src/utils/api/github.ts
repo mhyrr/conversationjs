@@ -115,7 +115,8 @@ export class GitHubMessageAPI implements MessageAPI {
 
   async replyToMessage(reply: MessageReply): Promise<boolean> {
     try {
-      console.log('Starting reply to message:', {
+      console.log('=== Starting GitHub Reply Flow ===');
+      console.log('1. Reply details:', {
         thread: reply.threadTitle,
         parent: {
           author: reply.parentAuthor,
@@ -124,21 +125,24 @@ export class GitHubMessageAPI implements MessageAPI {
         content: reply.content
       });
 
+      console.log('2. Fetching current content from GitHub...');
       const { content, sha } = await this.getFileContent();
-      console.log('Got current content, generating updated content');
+      console.log('3. Got content with SHA:', sha);
       
+      console.log('4. Generating updated content...');
       const updatedContent = addReplyToMarkdown(content, reply);
-      console.log('Generated updated content');
+      console.log('5. Content updated, committing to GitHub...');
 
       const success = await this.updateFile(
         updatedContent,
         sha,
         `Add reply from ${reply.author}`
       );
-      console.log('Reply operation completed:', success);
+      console.log('6. GitHub commit result:', success);
+      console.log('=== End GitHub Reply Flow ===');
       return success;
     } catch (error) {
-      console.error('Failed to add reply:', error);
+      console.error('!!! GitHub Reply Flow Failed:', error);
       return false;
     }
   }
