@@ -5,9 +5,6 @@
 I find it particularly interesting that we can't even definitively say whether consciousness is continuous or discrete. Do we experience reality in frames, like a movie, or in a continuous stream? The evidence seems mixed.
 
 
-
-  - @mhyrr [2025-02-11T21:45:59Z]: test
-
 - @mhyrr [2024-03-21]: The filtering mechanism you're describing might actually be the key to understanding consciousness. What if consciousness isn't a property or state, but rather a process of information integration and exclusion? This aligns with Integrated Information Theory, though I have some reservations about its mathematical formalization.
   
   Test x 2
@@ -18,9 +15,6 @@ I find it particularly interesting that we can't even definitively say whether c
       Test x 2
       - @user1 [2024-03-21]: The mathematical approach to consciousness always struck me as putting the cart before the horse. How can we quantify something we can't even properly define? IIT makes interesting predictions, but its fundamental axioms seem more like assumptions about the nature of consciousness than derived principles.
 
-
-
-    - @mhyrr [2025-02-11T21:45:59Z]: test
 
 ### The Role of Technology in Human Evolution
 
