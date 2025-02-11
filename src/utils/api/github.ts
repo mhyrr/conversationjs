@@ -22,29 +22,36 @@ export class GitHubMessageAPI implements MessageAPI {
     const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?ref=${BRANCH}`;
     console.log('Fetching from:', url);
 
-    const response = await fetch(url, {
-      headers: {
-        'Authorization': `Bearer ${user.accessToken}`,
-        'Accept': 'application/vnd.github.v3+json'
-      }
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      console.error('GitHub API error getting content:', {
-        status: response.status,
-        statusText: response.statusText,
-        error
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${user.accessToken}`,
+          'Accept': 'application/vnd.github.v3+json'
+        }
       });
-      throw new Error(`Failed to fetch file: ${error.message}`);
+
+      const responseText = await response.text();
+      console.log('Raw response:', responseText);
+      
+      if (!response.ok) {
+        console.error('GitHub API error getting content:', {
+          status: response.status,
+          statusText: response.statusText,
+          response: responseText
+        });
+        throw new Error(`Failed to fetch file: ${response.statusText}`);
+      }
+      
+      const data = JSON.parse(responseText);
+      console.log('Got file content with sha:', data.sha);
+      return {
+        content: atob(data.content),
+        sha: data.sha
+      };
+    } catch (error) {
+      console.error('Detailed fetch error:', error);
+      throw error;
     }
-    
-    const data = await response.json();
-    console.log('Got file content with sha:', data.sha);
-    return {
-      content: atob(data.content),
-      sha: data.sha
-    };
   }
 
   private async updateFile(content: string, sha: string, message: string): Promise<boolean> {
@@ -79,21 +86,23 @@ export class GitHubMessageAPI implements MessageAPI {
         body: JSON.stringify(body)
       });
 
+      const responseText = await response.text();
+      console.log('Raw update response:', responseText);
+
       if (!response.ok) {
-        const error = await response.json();
         console.error('GitHub API error updating file:', {
           status: response.status,
           statusText: response.statusText,
-          error
+          response: responseText
         });
         return false;
       }
 
-      const result = await response.json();
+      const result = JSON.parse(responseText);
       console.log('Update successful:', result);
       return true;
     } catch (error) {
-      console.error('Failed to update file:', error);
+      console.error('Detailed update error:', error);
       return false;
     }
   }
