@@ -5,6 +5,7 @@ import { ThreadList } from './components/ThreadList'
 import { useThreads } from './hooks/useThreads'
 import { Auth } from './components/Auth'
 import participants from '../participants.json'
+import { Header } from './components/Header'
 
 export function App() {
   const { threads, triggerUpdate } = useThreads()
@@ -26,6 +27,7 @@ export function App() {
   return (
     <BrowserRouter basename={basePath.replace(/\/$/, '')}>
       <Auth onAuthChange={checkAuth} />
+      <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
         <Routes>
           <Route path="/auth/callback" element={<AuthCallback />} />

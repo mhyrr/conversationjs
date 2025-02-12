@@ -1,4 +1,5 @@
 import { GitHubMessageAPI } from './api/github';
+import { useUpdatesStore } from '../stores/updates';
 
 interface MessageUpdate {
   threadTitle: string;
@@ -52,6 +53,7 @@ export async function updateMessage(update: MessageUpdate): Promise<boolean> {
     return response.ok;
   } else {
     const api = new GitHubMessageAPI();
+    useUpdatesStore.getState().addPendingUpdate();
     return await api.updateMessage(update);
   }
 }
@@ -66,6 +68,7 @@ export async function replyToMessage(reply: MessageReply): Promise<boolean> {
     return response.ok;
   } else {
     const api = new GitHubMessageAPI();
+    useUpdatesStore.getState().addPendingUpdate();
     return await api.replyToMessage(reply);
   }
 }
@@ -80,6 +83,7 @@ export async function createThread(thread: NewThread): Promise<boolean> {
     return response.ok;
   } else {
     const api = new GitHubMessageAPI();
+    useUpdatesStore.getState().addPendingUpdate();
     return await api.createThread(thread);
   }
 }
@@ -94,6 +98,7 @@ export async function moveToThread(move: MoveToThread): Promise<boolean> {
     return response.ok;
   } else {
     const api = new GitHubMessageAPI();
+    useUpdatesStore.getState().addPendingUpdate();
     return await api.moveToThread(move);
   }
 }
@@ -123,6 +128,7 @@ export async function deleteMessage({
     }
   } else {
     const api = new GitHubMessageAPI();
+    useUpdatesStore.getState().addPendingUpdate();
     return await api.deleteMessage({ threadTitle, messageAuthor, messageTimestamp });
   }
 } 
