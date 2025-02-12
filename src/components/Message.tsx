@@ -1,8 +1,13 @@
 import { useState } from 'react'
 import type { MessageNode } from '../utils/tree'
-import { createMessageKey } from '../utils/keys'
 import { getCurrentUser } from '../utils/auth'
 import { updateMessage, replyToMessage, moveToThread, deleteMessage } from '../utils/api'
+import { Card, CardHeader, CardContent, CardFooter } from './ui/card'
+import { Button } from './ui/button'
+import { Input } from './ui/input'
+import { Textarea } from './ui/textarea'
+import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar'
+import { ChevronDown, ChevronRight, Edit2, Reply, Trash2, ArrowUpRight } from 'lucide-react'
 
 interface MessageProps {
   message: MessageNode;
@@ -22,23 +27,15 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
   const currentUser = getCurrentUser()
   const isOwnMessage = currentUser?.login === message.author
   const displayName = message.author
+  const hasChildren = message.children?.length > 0
 
   const handleEdit = async () => {
-    console.log('Editing message:', {
-      threadTitle,
-      messageAuthor: message.author,
-      messageTimestamp: message.timestamp,
-      newContent: editContent.split('\n')
-    });
-
     const success = await updateMessage({
       threadTitle,
       messageAuthor: message.author,
       messageTimestamp: message.timestamp,
       newContent: editContent.split('\n')
     });
-
-    console.log('Edit response:', success);
 
     if (success) {
       setIsEditing(false);
@@ -50,16 +47,6 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
     if (!currentUser) return;
 
     const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
-
-    console.log('Replying to message:', {
-      threadTitle,
-      parentAuthor: message.author,
-      parentTimestamp: message.timestamp,
-      parentContent: message.content,
-      content: replyContent.split('\n'),
-      author: currentUser.login
-    });
-
     const success = await replyToMessage({
       threadTitle,
       parentAuthor: message.author,
@@ -69,8 +56,6 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
       author: currentUser.login,
       timestamp
     });
-
-    console.log('Reply response:', success);
 
     if (success) {
       setIsReplying(false);
@@ -93,7 +78,6 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
     if (success) {
       setIsMoving(false);
       setNewThreadTitle('');
-      // Refresh the page to show new thread
       window.location.reload();
     }
   };
@@ -115,128 +99,156 @@ export function Message({ message, threadTitle, onUpdate }: MessageProps) {
   };
 
   return (
-    <div className="message-group" data-depth={message.depth}>
-      <div className="message-content">
-        <div className="message-header">
-          {message.children?.length > 0 && (
-            <button 
-              className="collapse-toggle"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-            >
-              <span className="collapse-icon">
-                {isCollapsed ? '▸' : '▾'}
-              </span>
-            </button>
-          )}
-          <div className="message-prefix">
-            - @{displayName} [{message.timestamp}]:
-            {currentUser && (
-              <div className="message-actions">
-                {isOwnMessage ? (
-                  <>
-                    <button onClick={() => setIsEditing(true)} className="text-blue-500 text-sm ml-2">
-                      Edit
-                    </button>
-                    <button onClick={handleDelete} className="text-red-500 text-sm ml-2">
-                      Delete
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button onClick={() => setIsReplying(true)} className="text-blue-500 text-sm ml-2">
-                      Reply
-                    </button>
-                    <button onClick={() => setIsMoving(true)} className="text-blue-500 text-sm ml-2">
-                      Move to Thread
-                    </button>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
+    <Card className="mb-4 ml-[calc(var(--depth,0)*2rem)]">
+      <CardHeader className="flex flex-row items-center gap-4 py-4">
+        {hasChildren && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 p-0 shrink-0"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+          >
+            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </Button>
+        )}
+        {!hasChildren && <div className="w-6" />} {/* Spacer for consistent alignment */}
+        <Avatar className="h-8 w-8">
+          <AvatarImage src={`https://github.com/${displayName}.png`} alt={displayName} />
+          <AvatarFallback>{displayName[0]}</AvatarFallback>
+        </Avatar>
+        <div className="flex flex-col">
+          <span className="font-medium">@{displayName}</span>
+          <span className="text-sm text-muted-foreground">{message.timestamp}</span>
         </div>
+      </CardHeader>
 
+      <CardContent className="py-2">
         {isEditing ? (
-          <div className="edit-form mt-2">
-            <textarea
+          <div className="space-y-4">
+            <Textarea
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
-              className="w-full p-2 border rounded"
               rows={4}
             />
-            <div className="mt-2">
-              <button onClick={handleEdit} className="bg-blue-500 text-white px-3 py-1 rounded">
-                Save
-              </button>
-              <button onClick={() => setIsEditing(false)} className="ml-2 text-gray-500">
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsEditing(false)}>
                 Cancel
-              </button>
-            </div>
-          </div>
-        ) : isReplying ? (
-          <div className="reply-form mt-2">
-            <textarea
-              value={replyContent}
-              onChange={(e) => setReplyContent(e.target.value)}
-              className="w-full p-2 border rounded"
-              rows={4}
-              placeholder="Type your reply..."
-            />
-            <div className="mt-2">
-              <button onClick={handleReply} className="bg-blue-500 text-white px-3 py-1 rounded">
-                Reply
-              </button>
-              <button onClick={() => setIsReplying(false)} className="ml-2 text-gray-500">
-                Cancel
-              </button>
+              </Button>
+              <Button onClick={handleEdit}>Save</Button>
             </div>
           </div>
         ) : (
-          <div className={`message-content-body ${isCollapsed ? 'collapsed' : ''}`}>
+          <div className="space-y-2">
             {message.content.map((p, i) => (
-              <p key={i} className="message-paragraph">{p}</p>
+              <p key={i} className="whitespace-pre-wrap">{p}</p>
             ))}
           </div>
         )}
-      </div>
-      {message.children?.length > 0 && (
-        <div className={`message-replies ${isCollapsed ? 'collapsed' : ''}`}>
+      </CardContent>
+
+      {currentUser && (
+        <CardFooter className="flex justify-end gap-2 py-2">
+          {isOwnMessage ? (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8"
+                onClick={() => setIsEditing(true)}
+              >
+                <Edit2 className="mr-2 h-4 w-4" />
+                Edit
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 text-destructive"
+                onClick={handleDelete}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8"
+                onClick={() => setIsReplying(true)}
+              >
+                <Reply className="mr-2 h-4 w-4" />
+                Reply
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8"
+                onClick={() => setIsMoving(true)}
+              >
+                <ArrowUpRight className="mr-2 h-4 w-4" />
+                Move to Thread
+              </Button>
+            </>
+          )}
+        </CardFooter>
+      )}
+
+      {isReplying && (
+        <CardContent className="border-t pt-4">
+          <div className="space-y-4">
+            <Textarea
+              placeholder="Type your reply..."
+              value={replyContent}
+              onChange={(e) => setReplyContent(e.target.value)}
+              rows={4}
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsReplying(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleReply}>Reply</Button>
+            </div>
+          </div>
+        </CardContent>
+      )}
+
+      {isMoving && (
+        <CardContent className="border-t pt-4">
+          <div className="space-y-4">
+            <Input
+              type="text"
+              placeholder="New Thread Title"
+              value={newThreadTitle}
+              onChange={(e) => setNewThreadTitle(e.target.value)}
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsMoving(false)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={handleMoveToThread}
+                disabled={!newThreadTitle.trim()}
+              >
+                Move
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      )}
+
+      {!isCollapsed && hasChildren && (
+        <CardContent className="border-t pt-4">
           {message.children.map((child) => (
-            <Message 
+            <Message
               key={child.path}
               message={child}
               threadTitle={threadTitle}
               onUpdate={onUpdate}
             />
           ))}
-        </div>
+        </CardContent>
       )}
-      {isMoving && (
-        <div className="move-form mt-2">
-          <input
-            type="text"
-            placeholder="New Thread Title"
-            value={newThreadTitle}
-            onChange={(e) => setNewThreadTitle(e.target.value)}
-            className="w-full p-2 border rounded mb-2"
-          />
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={() => setIsMoving(false)}
-              className="px-3 py-1 text-gray-600"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleMoveToThread}
-              className="px-3 py-1 bg-blue-500 text-white rounded"
-              disabled={!newThreadTitle.trim()}
-            >
-              Move
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  )
+    </Card>
+  );
 } 

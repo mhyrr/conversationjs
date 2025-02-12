@@ -3,6 +3,11 @@ import { Thread as ThreadComponent } from './Thread'
 import type { Thread } from '../utils/markdown'
 import { getCurrentUser } from '../utils/auth'
 import { createThread } from '../utils/api'
+import { Card, CardHeader, CardContent, CardFooter } from './ui/card'
+import { Button } from './ui/button'
+import { Input } from './ui/input'
+import { Textarea } from './ui/textarea'
+import { Plus } from 'lucide-react'
 
 interface ThreadListProps {
   threads: Thread[];
@@ -35,7 +40,7 @@ export function ThreadList({ threads, onUpdate }: ThreadListProps) {
   };
 
   return (
-    <div className="thread-list">
+    <div className="space-y-6">
       {threads.map((thread) => (
         <ThreadComponent 
           key={thread.title} 
@@ -45,48 +50,51 @@ export function ThreadList({ threads, onUpdate }: ThreadListProps) {
       ))}
 
       {currentUser && (
-        <div className="mt-8 border-t pt-4">
+        <Card className="mt-8">
           {isCreating ? (
-            <div className="new-thread-form">
-              <input
-                type="text"
-                placeholder="Thread Title"
-                value={newThreadTitle}
-                onChange={(e) => setNewThreadTitle(e.target.value)}
-                className="w-full p-2 border rounded mb-2"
-              />
-              <textarea
-                placeholder="Initial Message"
-                value={initialMessage}
-                onChange={(e) => setInitialMessage(e.target.value)}
-                className="w-full p-2 border rounded mb-2"
-                rows={4}
-              />
-              <div className="flex justify-end gap-2">
-                <button
+            <>
+              <CardHeader>
+                <Input
+                  type="text"
+                  placeholder="Thread Title"
+                  value={newThreadTitle}
+                  onChange={(e) => setNewThreadTitle(e.target.value)}
+                />
+              </CardHeader>
+              <CardContent>
+                <Textarea
+                  placeholder="Initial Message"
+                  value={initialMessage}
+                  onChange={(e) => setInitialMessage(e.target.value)}
+                  rows={4}
+                />
+              </CardContent>
+              <CardFooter className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
                   onClick={() => setIsCreating(false)}
-                  className="px-3 py-1 text-gray-600"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={handleCreateThread}
-                  className="px-3 py-1 bg-blue-500 text-white rounded"
                   disabled={!newThreadTitle.trim() || !initialMessage.trim()}
                 >
                   Create Thread
-                </button>
-              </div>
-            </div>
+                </Button>
+              </CardFooter>
+            </>
           ) : (
-            <button
+            <Button
+              variant="outline"
+              className="w-full h-24 border-dashed"
               onClick={() => setIsCreating(true)}
-              className="w-full p-2 border-2 border-dashed border-gray-300 rounded text-gray-500 hover:border-blue-500 hover:text-blue-500"
             >
+              <Plus className="mr-2 h-4 w-4" />
               Start a New Thread
-            </button>
+            </Button>
           )}
-        </div>
+        </Card>
       )}
     </div>
   );

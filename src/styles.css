@@ -1,180 +1,157 @@
-/* Copy existing CSS here */ :root {
-    --primary-color: #0366d6;
-    --border-color: #e1e4e8;
-    --bg-color: #ffffff;
-    --text-color: #24292e;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+  }
 }
 
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    line-height: 1.5;
-    color: var(--text-color);
-    margin: 0;
-    padding: 0;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
 
-#app {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1rem;
-}
-
+/* Custom styles */
 .thread {
-    border: 1px solid var(--border-color);
-    margin: 1rem 0;
-    padding: 1rem;
-    border-radius: 6px;
+  @apply border rounded-lg p-4 my-4;
 }
 
 .thread-replies {
-    margin-left: 2rem;
-    padding-left: 1rem;
-    border-left: 2px solid var(--border-color);
+  @apply ml-8 pl-4 border-l-2 border-gray-200;
 }
 
 .thread-title {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    user-select: none;
-}
-
-.thread-title:hover {
-    color: var(--primary-color);
+  @apply cursor-pointer flex items-center gap-2 select-none hover:text-primary;
 }
 
 .thread-title .collapse-icon {
-    font-size: 1.2rem;
-    line-height: 1;
-    color: var(--text-color);
+  @apply text-lg leading-none text-foreground;
 }
 
 .thread-messages.collapsed {
-    display: none;
-}
-
-.hidden {
-    display: none;
+  @apply hidden;
 }
 
 .message-container {
-    position: relative;
-    margin: 1rem 0;
+  @apply relative my-4;
 }
 
 .message-thread {
-    margin: 1rem 0;
+  @apply my-4;
 }
 
 .message {
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 1rem;
-    background: var(--bg-color);
-    margin-left: 1.5rem;
+  @apply border rounded-lg p-4 bg-background ml-6;
 }
 
 .message-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  @apply flex items-center gap-2;
 }
 
 .message-header strong {
-    color: var(--text-color);
+  @apply text-foreground;
 }
 
 .replies {
-    margin-left: 2rem;
-    padding-left: 1rem;
-    border-left: 2px solid var(--border-color);
+  @apply ml-8 pl-4 border-l-2 border-gray-200;
 }
 
 .message p {
-    margin: 0.5rem 0;
-}
-
-.message p:first-child {
-    margin-top: 0;
-}
-
-.message p:last-child {
-    margin-bottom: 0;
+  @apply my-2 first:mt-0 last:mb-0;
 }
 
 .collapse-toggle {
-    padding: 0;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-color);
+  @apply p-0 w-5 h-5 flex items-center justify-center bg-transparent border-none cursor-pointer text-foreground;
 }
 
 .collapse-icon {
-    font-size: 1.2rem;
-    line-height: 1;
+  @apply text-lg leading-none;
 }
 
 .timestamp {
-    color: #666;
-    font-size: 0.9em;
-    margin-left: 0.5rem;
+  @apply text-muted-foreground text-sm ml-2;
 }
 
 .thread-messages {
-    display: flex;
-    flex-direction: column;
+  @apply flex flex-col;
 }
 
 .message-group {
-    margin: 0;
-    padding: 0.5rem;
-    border: none;
-    margin-left: calc(var(--depth, 0) * 2rem);
+  @apply m-0 p-2 border-none;
 }
 
 .message-content {
-    padding: 0.5rem;
+  @apply p-2;
 }
 
 .message-prefix {
-    color: #666;
-    margin-bottom: 0.5rem;
-    font-family: monospace;
+  @apply text-muted-foreground mb-2 font-mono;
 }
 
 .message-replies {
-    margin-left: 2rem;
-    padding-left: 1rem;
-    border-left: 2px solid var(--border-color);
+  @apply ml-8 pl-4 border-l-2 border-gray-200;
 }
 
 .message-content p {
-    margin: 0.5rem 0;
+  @apply my-2;
 }
 
-.message-replies.collapsed {
-    display: none;
-}
-
-.message-content-body.collapsed,
-.message-replies.collapsed {
-    display: none;
+.message-replies.collapsed,
+.message-content-body.collapsed {
+  @apply hidden;
 }
 
 .message-paragraph {
-    margin: 0.5rem 0;
-    white-space: pre-wrap;
+  @apply my-2 whitespace-pre-wrap;
 }
 
 .paragraph-actions {
-    display: none;
+  @apply hidden;
 }
-
-\ No newline at end of file

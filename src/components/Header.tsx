@@ -1,10 +1,33 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useUpdatesStore } from '../stores/updates';
-import { getCurrentUser } from '../utils/auth';
+import { authenticateWithGithub, getCurrentUser, logout, GithubUser } from '../utils/auth';
+import { config } from '../config';
+import { Button } from './ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
+import { UsersDropdown } from './UsersDropdown';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu"
 
-export function Header() {
+interface HeaderProps {
+  onAuthChange?: () => void;
+}
+
+export function Header({ onAuthChange }: HeaderProps) {
   const { pendingUpdates, lastUpdateTime } = useUpdatesStore();
-  const currentUser = getCurrentUser();
+  const [user, setUser] = useState<GithubUser | null>(null);
+
+  useEffect(() => {
+    const currentUser = getCurrentUser();
+    if (currentUser) {
+      setUser(currentUser);
+    }
+  }, []);
 
   useEffect(() => {
     if (lastUpdateTime && pendingUpdates > 0) {
@@ -30,44 +53,86 @@ export function Header() {
     }
   }, [lastUpdateTime, pendingUpdates]);
 
+  const handleLogout = () => {
+    logout();
+    setUser(null);
+    onAuthChange?.();
+  };
+
   return (
-    <header className="flex justify-between items-center p-2 bg-gray-100 fixed w-full top-0 z-50 shadow-sm">
-      <h1 className="text-lg font-semibold">ConversationJS</h1>
-      <div className="flex items-center gap-3">
-        {pendingUpdates > 0 && (
-          <div className="flex items-center text-yellow-600 text-sm">
-            <svg width="12" height="12" className="animate-spin mr-2" viewBox="0 0 12 12">
-              <circle 
-                cx="6" 
-                cy="6" 
-                r="5" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                fill="none" 
-                className="opacity-25"
-              />
-              <path 
-                d="M6 1C3.24 1 1 3.24 1 6" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round"
-                className="opacity-75"
-              />
-            </svg>
-            Updates Pending
-          </div>
-        )}
-        {currentUser && (
-          <div className="flex items-center gap-2">
-            <img 
-              src={`https://github.com/${currentUser.login}.png?size=48`} 
-              alt={currentUser.login}
-              className="w-6 h-6 rounded-full"
-            />
-            <span className="text-sm text-gray-700">{currentUser.login}</span>
-          </div>
-        )}
+    <div className="w-full bg-background border-b fixed top-0 z-50">
+      <div className="flex h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 items-center justify-between">
+        <div className="flex items-center">
+          <img 
+            className="h-8 w-auto" 
+            src={config?.faviconPath || '/favicon.svg'}
+            alt="ConversationJS" 
+          />
+          <span className="ml-2 text-lg font-semibold">ConversationJS</span>
+        </div>
+
+        <div className="flex items-center gap-4">
+          {pendingUpdates > 0 && (
+            <div className="flex items-center text-yellow-600 text-sm">
+              <svg width="12" height="12" className="animate-spin mr-2" viewBox="0 0 12 12">
+                <circle 
+                  cx="6" 
+                  cy="6" 
+                  r="5" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  fill="none" 
+                  className="opacity-25"
+                />
+                <path 
+                  d="M6 1C3.24 1 1 3.24 1 6" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round"
+                  className="opacity-75"
+                />
+              </svg>
+              <span className="hidden sm:inline">Updates Pending</span>
+            </div>
+          )}
+
+          <UsersDropdown />
+
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage 
+                      src={user.avatar_url || `https://github.com/${user.login}.png`} 
+                      alt={user.login} 
+                    />
+                    <AvatarFallback>{user.login[0]}</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">@{user.login}</p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user.name || user.login}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button onClick={() => authenticateWithGithub()}>
+              Sign in with GitHub
+            </Button>
+          )}
+        </div>
       </div>
-    </header>
+    </div>
   );
 } 

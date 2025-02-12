@@ -2,6 +2,8 @@ import participants from '../../participants.json';
 
 export interface GithubUser {
   login: string;
+  avatar_url: string;
+  name?: string;
   accessToken: string;
 }
 
