@@ -113,7 +113,7 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
 
   return (
     <Card className={cn(
-      "mb-2",
+      "mb-2 hover:bg-[#61DAFB]/5 transition-colors",
       isNested 
         ? "ml-4 border-0 shadow-none bg-transparent" 
         : "mb-4 border-0 shadow-none bg-transparent border-b"
@@ -124,7 +124,7 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 p-0 shrink-0"
+              className="h-6 w-6 p-0 shrink-0 text-[#2B3137] hover:text-[#61DAFB] hover:bg-[#61DAFB]/10"
               onClick={() => setIsCollapsed(!isCollapsed)}
             >
               {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -136,13 +136,13 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
             <AvatarFallback>{displayName[0]}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <span className="font-medium">@{displayName}</span>
+            <span className="font-medium text-[#2B3137]">@{displayName}</span>
             <span className="text-sm text-muted-foreground">{message.timestamp}</span>
           </div>
         </CardHeader>
 
         <CardContent className={cn(
-          "pl-14",
+          "pl-14 text-[#2B3137]",
           isNested ? "pb-0 pt-0" : "py-1"
         )}>
           {isEditing ? (
@@ -179,7 +179,7 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-7"
+                    className="h-7 hover:bg-[#61DAFB]/10 hover:text-[#2B3137]"
                     onClick={() => setIsEditing(true)}
                   >
                     <Edit2 className="mr-2 h-4 w-4" />
@@ -188,7 +188,7 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-7 text-destructive"
+                    className="h-7 text-destructive hover:bg-destructive/10"
                     onClick={handleDelete}
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
@@ -200,7 +200,7 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-7"
+                    className="h-7 hover:bg-[#61DAFB]/10 hover:text-[#2B3137]"
                     onClick={() => setIsReplying(true)}
                   >
                     <Reply className="mr-2 h-4 w-4" />
@@ -209,7 +209,7 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-7"
+                    className="h-7 hover:bg-[#61DAFB]/10 hover:text-[#2B3137]"
                     onClick={() => setIsMoving(true)}
                   >
                     <ArrowUpRight className="mr-2 h-4 w-4" />
