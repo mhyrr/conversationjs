@@ -31,12 +31,12 @@ export function Header() {
   }, [lastUpdateTime, pendingUpdates]);
 
   return (
-    <header className="flex justify-between items-center p-4 bg-gray-100">
-      <h1 className="text-xl font-bold">ConversationJS</h1>
-      <div className="flex items-center gap-4">
+    <header className="flex justify-between items-center p-2 bg-gray-100 fixed w-full top-0 z-50 shadow-sm">
+      <h1 className="text-lg font-semibold">ConversationJS</h1>
+      <div className="flex items-center gap-3">
         {pendingUpdates > 0 && (
-          <div className="flex items-center text-yellow-600">
-            <svg className="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <div className="flex items-center text-yellow-600 text-sm">
+            <svg className="animate-spin h-3 w-3 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
@@ -48,9 +48,9 @@ export function Header() {
             <img 
               src={`https://github.com/${currentUser.login}.png`} 
               alt={currentUser.login}
-              className="w-8 h-8 rounded-full"
+              className="w-6 h-6 rounded-full"
             />
-            <span>{currentUser.login}</span>
+            <span className="text-sm text-gray-700">{currentUser.login}</span>
           </div>
         )}
       </div>
