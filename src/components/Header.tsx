@@ -46,7 +46,7 @@ export function Header() {
         {currentUser && (
           <div className="flex items-center gap-2">
             <img 
-              src={`https://github.com/${currentUser.login}.png`} 
+              src={`https://github.com/${currentUser.login}.png?size=48`} 
               alt={currentUser.login}
               className="w-6 h-6 rounded-full"
             />
