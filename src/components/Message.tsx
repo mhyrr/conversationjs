@@ -31,8 +31,7 @@ if (typeof document !== 'undefined') {
 export function Message({ message, threadTitle, onUpdate, isNested = false }: MessageProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
-  const [isReplying, setIsReplying] = useState(false)
-  const [isMoving, setIsMoving] = useState(false)
+  const [activeForm, setActiveForm] = useState<'reply' | 'move' | null>(null)
   const [editContent, setEditContent] = useState(message.content.join('\n'))
   const [replyContent, setReplyContent] = useState('')
   const [newThreadTitle, setNewThreadTitle] = useState('')
@@ -71,7 +70,7 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
     });
 
     if (success) {
-      setIsReplying(false);
+      setActiveForm(null);
       setReplyContent('');
       onUpdate?.();
     }
@@ -89,7 +88,7 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
     });
 
     if (success) {
-      setIsMoving(false);
+      setActiveForm(null);
       setNewThreadTitle('');
       window.location.reload();
     }
@@ -142,7 +141,7 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
         </CardHeader>
 
         <CardContent className={cn(
-          "pl-14 text-[#2B3137]",
+          "pl-10 text-[#2B3137]",
           isNested ? "pb-0 pt-0" : "py-1"
         )}>
           {isEditing ? (
@@ -170,7 +169,7 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
 
         {currentUser && (
           <CardFooter className={cn(
-            "flex justify-end gap-2 pl-14",
+            "flex justify-end gap-2 pl-10",
             isNested ? "py-0" : "py-1"
           )}>
             <div className="flex gap-2 ml-auto opacity-0 group-hover/msg:opacity-100 transition-opacity">
@@ -201,7 +200,7 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
                     variant="ghost"
                     size="sm"
                     className="h-7 hover:bg-[#61DAFB]/10 hover:text-[#2B3137]"
-                    onClick={() => setIsReplying(true)}
+                    onClick={() => setActiveForm('reply')}
                   >
                     <Reply className="mr-2 h-4 w-4" />
                     Reply
@@ -210,7 +209,7 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
                     variant="ghost"
                     size="sm"
                     className="h-7 hover:bg-[#61DAFB]/10 hover:text-[#2B3137]"
-                    onClick={() => setIsMoving(true)}
+                    onClick={() => setActiveForm('move')}
                   >
                     <ArrowUpRight className="mr-2 h-4 w-4" />
                     Move to Thread
@@ -221,17 +220,18 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
           </CardFooter>
         )}
 
-        {isReplying && (
-          <CardContent className="border-t pt-3 pl-14">
+        {activeForm === 'reply' && (
+          <CardContent className="border-t pt-3 pl-10">
             <div className="space-y-3">
               <Textarea
                 placeholder="Type your reply..."
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
                 rows={4}
+                autoFocus
               />
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsReplying(false)}>
+                <Button variant="outline" onClick={() => setActiveForm(null)}>
                   Cancel
                 </Button>
                 <Button onClick={handleReply}>Reply</Button>
@@ -240,8 +240,8 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
           </CardContent>
         )}
 
-        {isMoving && (
-          <CardContent className="border-t pt-3 pl-14">
+        {activeForm === 'move' && (
+          <CardContent className="border-t pt-3 pl-10">
             <div className="space-y-3">
               <Input
                 type="text"
@@ -250,7 +250,7 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
                 onChange={(e) => setNewThreadTitle(e.target.value)}
               />
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsMoving(false)}>
+                <Button variant="outline" onClick={() => setActiveForm(null)}>
                   Cancel
                 </Button>
                 <Button

@@ -20,10 +20,10 @@ export function updateMarkdownContent(content: string, update: MessageUpdate): s
       const indentMatch = line.match(/^(\s*)/);
       currentIndent = indentMatch ? indentMatch[1] : '';
       
-      const messageMatch = line.match(/- @(\w+) \[(.*?)\]:/);
+      const messageMatch = line.match(/- @(\w+) \[(.*?)Z?\]:/);
       if (messageMatch && 
           messageMatch[1] === update.messageAuthor && 
-          messageMatch[2] === update.messageTimestamp) {
+          messageMatch[2] === update.messageTimestamp.replace(/Z$/, '')) {
         inTargetMessage = true;
         newLines.push(`${currentIndent}- @${update.messageAuthor} [${update.messageTimestamp}]: ${update.newContent[0]}`);
         for (let j = 1; j < update.newContent.length; j++) {
@@ -49,20 +49,25 @@ export function addReplyToMarkdown(content: string, reply: MessageReply): string
   let newLines = [];
   let inTargetThread = false;
   let parentFound = false;
-  let parentIndent: number | null = null;
+  let collectingContent = false;
+  let parentIndent = '';
   let currentLine = 0;
 
   while (currentLine < lines.length) {
     const line = lines[currentLine];
 
+    // Handle thread headers
     if (line.startsWith('### ')) {
-      if (inTargetThread && !parentFound) {
-        inTargetThread = line.includes(reply.threadTitle);
-      } else if (inTargetThread && parentFound) {
-        newLines.push(...lines.slice(currentLine));
-        break;
-      } else {
-        inTargetThread = line.includes(reply.threadTitle);
+      inTargetThread = line.includes(reply.threadTitle);
+      if (!inTargetThread && collectingContent) {
+        // Add reply before next thread if we haven't already
+        newLines.push('');
+        newLines.push(`${parentIndent}  - @${reply.author} [${reply.timestamp}]: ${reply.content[0]}`);
+        for (let j = 1; j < reply.content.length; j++) {
+          newLines.push(`${parentIndent}    ${reply.content[j]}`);
+        }
+        newLines.push('');
+        collectingContent = false;
       }
       newLines.push(line);
       currentLine++;
@@ -75,44 +80,67 @@ export function addReplyToMarkdown(content: string, reply: MessageReply): string
       continue;
     }
 
+    // Check for message lines
     const messageMatch = line.match(/^(\s*)- @(\w+) \[(.*?)Z?\]: /);
     if (messageMatch) {
       const [, indent, author, timestamp] = messageMatch;
       
-      if (author === reply.parentAuthor && timestamp === reply.parentTimestamp) {
+      if (!parentFound && author === reply.parentAuthor && timestamp === reply.parentTimestamp.replace(/Z$/, '')) {
+        // Found parent message
         parentFound = true;
-        parentIndent = indent.length;
-        newLines.push(line);
-        
-        while (currentLine + 1 < lines.length) {
-          const nextLine = lines[currentLine + 1];
-          
-          if (nextLine.startsWith('### ')) break;
-
-          const nextMatch = nextLine.match(/^(\s*)- @/);
-          if (nextMatch) {
-            const nextIndent = nextMatch[1].length;
-            if (nextIndent <= parentIndent) break;
+        collectingContent = true;
+        parentIndent = indent;
+      } else if (collectingContent) {
+        // If we hit another message at same or higher level than parent, add our reply
+        if (indent.length <= parentIndent.length) {
+          newLines.push('');
+          newLines.push(`${parentIndent}  - @${reply.author} [${reply.timestamp}]: ${reply.content[0]}`);
+          for (let j = 1; j < reply.content.length; j++) {
+            newLines.push(`${parentIndent}    ${reply.content[j]}`);
           }
-          currentLine++;
-          newLines.push(nextLine);
+          newLines.push('');
+          collectingContent = false;
         }
+      }
+      newLines.push(line);
+      currentLine++;
+      continue;
+    }
 
-        const replyIndent = ' '.repeat(parentIndent + 2);
-        newLines.push('');
-        newLines.push(`${replyIndent}- @${reply.author} [${reply.timestamp}]: ${reply.content[0]}`);
-        
-        for (let j = 1; j < reply.content.length; j++) {
-          newLines.push(`${replyIndent}  ${reply.content[j]}`);
-        }
-        newLines.push('');
+    // Handle content lines
+    const indentMatch = line.match(/^(\s*)/);
+    const lineIndent = indentMatch ? indentMatch[1] : '';
+
+    if (collectingContent) {
+      // If this is a content line of the parent message, add it
+      if (line.trim() === '' || lineIndent.length > parentIndent.length) {
+        newLines.push(line);
         currentLine++;
         continue;
+      } else {
+        // If we hit any other kind of line, add our reply
+        newLines.push('');
+        newLines.push(`${parentIndent}  - @${reply.author} [${reply.timestamp}]: ${reply.content[0]}`);
+        for (let j = 1; j < reply.content.length; j++) {
+          newLines.push(`${parentIndent}    ${reply.content[j]}`);
+        }
+        newLines.push('');
+        collectingContent = false;
       }
     }
 
     newLines.push(line);
     currentLine++;
+  }
+
+  // If we were still collecting at end of file, add the reply
+  if (collectingContent) {
+    newLines.push('');
+    newLines.push(`${parentIndent}  - @${reply.author} [${reply.timestamp}]: ${reply.content[0]}`);
+    for (let j = 1; j < reply.content.length; j++) {
+      newLines.push(`${parentIndent}    ${reply.content[j]}`);
+    }
+    newLines.push('');
   }
 
   return newLines.join('\n');
