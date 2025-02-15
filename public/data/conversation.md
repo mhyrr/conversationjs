@@ -20,10 +20,8 @@
 
 
     - @mhyrr [2025-02-13T15:37:50]: Tests2
-    - @mhyrr [2025-02-15T17:30:14Z]: Test x 2
-
+    - @mhyrr [2025-02-15T17:30:14]: Test
 ### Sustainable Software Architecture
-
 - @mhyrr [2025-02-12T01:22:55Z]: I've been wrestling with an interesting architectural challenge in my current project. We're building a distributed system that needs to handle both real-time events and long-running analytical processes. The traditional event-driven architecture feels insufficient for our needs.
 
   I'm considering a hybrid approach that combines event streaming with materialized views, but I'm concerned about the operational complexity this introduces.
