@@ -65,6 +65,9 @@ cd conversationjs
     "settings": {
         "allow_public_view": true
     }
+    "repo": {
+      ...
+    }
 }
 ```
 
@@ -92,8 +95,10 @@ npm test
 
 1. Push your changes to GitHub
 2. Import your repository in Vercel
-3. Configure environment variables as described above in Vercel (VITE_APP_GH_CLIENT_ID, VITE_APP_GH_CLIENT_SECRET)
-4. Deploy!
+3. Make sure all participants have write access to the repository
+4. We're using the Github API actions to commit updates. Go to Repository Settings > Actions > General and make sure Workflow has Read/Write Permissions
+5. Configure environment variables as described above in Vercel (VITE_APP_GH_CLIENT_ID, VITE_APP_GH_CLIENT_SECRET)
+6. Deploy!
 
 (Note: Your Github Pages deployments will fail if your repo is private and you have a free plan. Doesn't matter for Vercel hosting)
 
