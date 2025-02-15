@@ -31,22 +31,24 @@ cd conversationjs
 
 4. Set up environment:
 
+   Add the Client ID and Client Secret from your OAuth App to your Github secrets
+
    For Local Development:
    ```bash
    # Create .env file
-   echo "VITE_GITHUB_CLIENT_ID=your_dev_client_id" > .env
+   echo "VITE_APP_GH_CLIENT_ID=your_dev_client_id" > .env
    # Create server/.env file
-   echo "VITE_GITHUB_CLIENT_ID=your_dev_client_id" > server/.env
-   echo "VITE_GITHUB_CLIENT_SECRET=your_dev_client_secret" >> server/.env
+   echo "VITE_APP_GH_CLIENT_ID=your_dev_client_id" > server/.env
+   echo "VITE_APP_GH_CLIENT_SECRET=your_dev_client_secret" >> server/.env
    ```
 
    For Vercel Deployment:
    - Go to your Vercel project settings
    - Add Environment Variables:
-     - `VITE_GITHUB_CLIENT_ID`: Your production OAuth app client ID
-     - `VITE_GITHUB_CLIENT_SECRET`: Your production OAuth app client secret
+     - `VITE_APP_GH_CLIENT_ID`: Your production OAuth app client ID
+     - `VITE_APP_GH_CLIENT_SECRET`: Your production OAuth app client secret
 
-5. Configure participants in participants.json:
+6. Configure participants in participants.json:
  
 ```json
 {
@@ -90,8 +92,10 @@ npm test
 
 1. Push your changes to GitHub
 2. Import your repository in Vercel
-3. Configure environment variables as described above
+3. Configure environment variables as described above in Vercel (VITE_APP_GH_CLIENT_ID, VITE_APP_GH_CLIENT_SECRET)
 4. Deploy!
+
+(Note: Your Github Pages deployments will fail if your repo is private and you have a free plan. Doesn't matter for Vercel hosting)
 
 ## Data Structure
 
