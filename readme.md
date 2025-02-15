@@ -36,17 +36,17 @@ cd conversationjs
    For Local Development:
    ```bash
    # Create .env file
-   echo "VITE_GITHUB_CLIENT_ID=your_dev_client_id" > .env
+   echo "VITE_APP_GH_CLIENT_ID=your_dev_client_id" > .env
    # Create server/.env file
-   echo "VITE_GITHUB_CLIENT_ID=your_dev_client_id" > server/.env
-   echo "VITE_GITHUB_CLIENT_SECRET=your_dev_client_secret" >> server/.env
+   echo "VITE_APP_GH_CLIENT_ID=your_dev_client_id" > server/.env
+   echo "VITE_APP_GH_CLIENT_SECRET=your_dev_client_secret" >> server/.env
    ```
 
    For Vercel Deployment:
    - Go to your Vercel project settings
    - Add Environment Variables:
-     - `VITE_GITHUB_CLIENT_ID`: Your production OAuth app client ID
-     - `VITE_GITHUB_CLIENT_SECRET`: Your production OAuth app client secret
+     - `VITE_APP_GH_CLIENT_ID`: Your production OAuth app client ID
+     - `VITE_APP_GH_CLIENT_SECRET`: Your production OAuth app client secret
 
 6. Configure participants in participants.json:
  
@@ -92,7 +92,7 @@ npm test
 
 1. Push your changes to GitHub
 2. Import your repository in Vercel
-3. Configure environment variables as described above
+3. Configure environment variables as described above in Vercel (VITE_APP_GH_CLIENT_ID, VITE_APP_GH_CLIENT_SECRET)
 4. Deploy!
 
 ## Data Structure
