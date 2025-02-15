@@ -1,4 +1,4 @@
-# ConversationJS
+# ConversationJS ![](public/favicon.svg)
 
 A GitHub-based conversation platform for collaborative discussions.
 
