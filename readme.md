@@ -91,6 +91,11 @@ Run tests:
 npm test
 ```
 
+## Invite Collaborators
+
+1. Participants listed in the `participants.json` file need to be collaborators on the repository. Go to Settings > Collaborators and add their Github handles.
+2. Make sure they login and access the repo otherwise their commits will fail.
+
 ## Deployment
 
 1. Push your changes to GitHub
