@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu"
+import config from '../../participants.json';
 
 interface HeaderProps {
   onAuthChange?: () => void;
@@ -34,7 +35,7 @@ export function Header({ onAuthChange }: HeaderProps) {
       // Check GitHub deployment status every 10 seconds
       const interval = setInterval(async () => {
         try {
-          const response = await fetch('https://api.github.com/repos/mhyrr/conversationjs/actions/runs?status=completed&per_page=1');
+          const response = await fetch(`https://api.github.com/repos/${config.repo.owner}/${config.repo.name}/actions/runs?status=completed&per_page=1`);
           const data = await response.json();
           
           if (data.workflow_runs?.length > 0) {

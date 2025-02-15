@@ -7,11 +7,10 @@ import {
   moveMessageToThread, 
   deleteMessageFromMarkdown 
 } from '../../shared/markdown-operations';
+import config from '../../../participants.json';
 
-const REPO_OWNER = 'mhyrr';
-const REPO_NAME = 'conversationjs';
+const { owner: REPO_OWNER, name: REPO_NAME, branch: BRANCH } = config.repo;
 const FILE_PATH = 'public/data/conversation.md';
-const BRANCH = 'main'; // or whatever your default branch is
 
 export class GitHubMessageAPI implements MessageAPI {
   private async getFileContent(): Promise<{ content: string; sha: string }> {

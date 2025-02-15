@@ -12,8 +12,13 @@
         }
     ],
     "settings": {
-        "allow_public_view": true,
+        "allow_public_view": false,
         "allow_reactions": true,
         "require_approval": false
+    },
+    "repo": {
+        "owner": "mhyrr",
+        "name": "conversationjs",
+        "branch": "main"
     }
 } 
