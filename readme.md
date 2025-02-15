@@ -31,6 +31,8 @@ cd conversationjs
 
 4. Set up environment:
 
+   Add the Client ID and Client Secret from your OAuth App to your Github secrets
+
    For Local Development:
    ```bash
    # Create .env file
@@ -46,7 +48,7 @@ cd conversationjs
      - `VITE_GITHUB_CLIENT_ID`: Your production OAuth app client ID
      - `VITE_GITHUB_CLIENT_SECRET`: Your production OAuth app client secret
 
-5. Configure participants in participants.json:
+6. Configure participants in participants.json:
  
 ```json
 {
