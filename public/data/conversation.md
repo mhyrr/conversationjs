@@ -19,9 +19,7 @@
       The challenge is that traditional software verification techniques don't map well to neural networks. We might need entirely new mathematical frameworks.
 
 
-    - @mhyrr [2025-02-13T15:37:50Z]: Test
-
-
+    - @mhyrr [2025-02-13T15:37:50]: Test x2
     - @mhyrr [2025-02-15T17:30:14Z]: Test x 2
 
 ### Sustainable Software Architecture
