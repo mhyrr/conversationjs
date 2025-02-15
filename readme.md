@@ -49,6 +49,8 @@ cd conversationjs
      - `VITE_APP_GH_CLIENT_SECRET`: Your production OAuth app client secret
 
 6. Configure participants in participants.json:
+
+Be sure the <repo_name> matches whatever you name the repository in Github
  
 ```json
 {
@@ -66,7 +68,9 @@ cd conversationjs
         "allow_public_view": true
     }
     "repo": {
-      ...
+        "owner": "mhyrr",
+        "name": "<repo_name>",
+        "branch": "main"
     }
 }
 ```
