@@ -95,6 +95,8 @@ npm test
 3. Configure environment variables as described above in Vercel (VITE_APP_GH_CLIENT_ID, VITE_APP_GH_CLIENT_SECRET)
 4. Deploy!
 
+(Note: Your Github Pages deployments will fail if your repo is private and you have a free plan. Doesn't matter for Vercel hosting)
+
 ## Data Structure
 
 Conversations are stored in Markdown format:
