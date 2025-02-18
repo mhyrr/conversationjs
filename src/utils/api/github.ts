@@ -63,9 +63,16 @@ export class GitHubMessageAPI implements MessageAPI {
       console.log('Updating file at:', url);
       console.log('Commit message:', message);
 
+      const encodeUnicode = (str: string) => {
+        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+          function (match, p1) {
+            return String.fromCharCode(parseInt(p1, 16))
+          }));
+      };
+
       const body = {
         message,
-        content: btoa(content),
+        content: encodeUnicode(content),
         sha,
         branch: BRANCH,
         committer: {
