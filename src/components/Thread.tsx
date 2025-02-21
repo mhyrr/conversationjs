@@ -18,10 +18,29 @@ interface ThreadProps {
   onUpdate: () => void;
 }
 
+const getRelativeTimeString = (timestamp: number): string => {
+  const now = Date.now();
+  const diffInDays = Math.floor((now - timestamp) / (1000 * 60 * 60 * 24));
+  
+  if (diffInDays === 0) {
+    const diffInHours = Math.floor((now - timestamp) / (1000 * 60 * 60));
+    if (diffInHours === 0) {
+      const diffInMinutes = Math.floor((now - timestamp) / (1000 * 60));
+      return `${diffInMinutes} minute${diffInMinutes !== 1 ? 's' : ''} ago`;
+    }
+    return `${diffInHours} hour${diffInHours !== 1 ? 's' : ''} ago`;
+  } else if (diffInDays < 7) {
+    return `${diffInDays} day${diffInDays !== 1 ? 's' : ''} ago`;
+  } else {
+    const weeks = Math.floor(diffInDays / 7);
+    return `${weeks} week${weeks !== 1 ? 's' : ''} ago`;
+  }
+};
+
 export function Thread({ thread, onUpdate }: ThreadProps) {
   const expandedThreads = useThreadStore(state => state.expandedThreads);
   const recentThreads = useThreadStore(state => state.recentThreads);
-  const { expandThread, collapseThread } = useThreadStore();
+  const { expandThread, collapseThread, updateRecentThreads } = useThreadStore();
   const isCollapsed = !expandedThreads.has(thread.title);
   const messageTree = buildMessageTree(thread.messages);
   const hasRecentMessages = recentThreads.has(thread.title);
@@ -30,6 +49,19 @@ export function Thread({ thread, onUpdate }: ThreadProps) {
   const latestTimestamp = thread.messages
     .map(msg => new Date(msg.timestamp).getTime())
     .reduce((max, current) => Math.max(max, current), 0);
+
+  // Update recent threads on mount and when messages change
+  useEffect(() => {
+    updateRecentThreads();
+  }, [thread.messages, updateRecentThreads]);
+
+  const relativeTime = getRelativeTimeString(latestTimestamp);
+  const formattedDate = new Date(latestTimestamp).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric'
+  });
 
   return (
     <Card 
@@ -44,12 +76,19 @@ export function Thread({ thread, onUpdate }: ThreadProps) {
           </Button>
           <div className="flex items-center gap-2">
             <CardTitle>{thread.title}</CardTitle>
-            {hasRecentMessages && (
-              <div 
-                className="h-2.5 w-2.5 rounded-full bg-blue-500 animate-pulse" 
-                title="Has messages from the last 24 hours"
-              />
-            )}
+            <div className="flex items-center gap-2">
+              {hasRecentMessages ? (
+                <>
+                  <div 
+                    className="h-2.5 w-2.5 rounded-full bg-blue-500 animate-pulse" 
+                    title="Has messages from the last 24 hours"
+                  />
+                  <span className="text-xs text-muted-foreground">{formattedDate}</span>
+                </>
+              ) : (
+                <span className="text-xs text-muted-foreground">{relativeTime}</span>
+              )}
+            </div>
           </div>
         </div>
       </CardHeader>

@@ -9,6 +9,7 @@ interface ThreadState {
   collapseThread: (threadTitle: string) => void;
   setExpandedThreads: (threads: string[]) => void;
   showNewest: () => void;
+  updateRecentThreads: () => void;
 }
 
 const getRecentThreads = (): Set<string> => {
@@ -33,7 +34,7 @@ const getRecentThreads = (): Set<string> => {
 
 export const useThreadStore = create<ThreadState>((set) => ({
   expandedThreads: new Set<string>(),
-  recentThreads: getRecentThreads(),
+  recentThreads: new Set<string>(),
   expandAll: () => set((state) => {
     const allThreads = document.querySelectorAll('[data-thread-title]');
     const titles = Array.from(allThreads).map(el => el.getAttribute('data-thread-title') || '');
@@ -41,16 +42,21 @@ export const useThreadStore = create<ThreadState>((set) => ({
   }),
   collapseAll: () => set({ expandedThreads: new Set() }),
   expandThread: (threadTitle: string) => set((state) => ({
-    expandedThreads: new Set([...state.expandedThreads, threadTitle])
+    expandedThreads: new Set([...state.expandedThreads, threadTitle]),
+    recentThreads: state.recentThreads
   })),
   collapseThread: (threadTitle: string) => set((state) => {
     const newSet = new Set(state.expandedThreads);
     newSet.delete(threadTitle);
-    return { expandedThreads: newSet };
+    return { expandedThreads: newSet, recentThreads: state.recentThreads };
   }),
   setExpandedThreads: (threads: string[]) => set({
     expandedThreads: new Set(threads)
   }),
+  updateRecentThreads: () => set((state) => ({
+    expandedThreads: state.expandedThreads,
+    recentThreads: getRecentThreads()
+  })),
   showNewest: () => set((state) => {
     const recentThreads = getRecentThreads();
     return { 
