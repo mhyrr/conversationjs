@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useUpdatesStore } from '../stores/updates';
 import { authenticateWithGithub, getCurrentUser, logout, GithubUser } from '../utils/auth';
-import { config } from '../config';
 import { Button } from './ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 import { UsersDropdown } from './UsersDropdown';
@@ -63,13 +62,16 @@ export function Header({ onAuthChange }: HeaderProps) {
   return (
     <div className="w-full bg-background border-b fixed top-0 z-50">
       <div className="flex h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 items-center justify-between">
-        <div className="flex items-center">
-          <img 
-            className="h-8 w-auto" 
-            src={config?.faviconPath || '/favicon.svg'}
-            alt="ConversationJS" 
-          />
-          <span className="ml-2 text-lg font-semibold">ConversationJS</span>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center">
+            <img 
+              className="h-8 w-auto" 
+              src="/favicon.svg"
+              alt="ConversationJS" 
+            />
+            <span className="ml-2 text-lg font-semibold">ConversationJS</span>
+          </div>
+          <UsersDropdown />
         </div>
 
         <div className="flex items-center gap-4">
@@ -96,8 +98,6 @@ export function Header({ onAuthChange }: HeaderProps) {
               <span className="hidden sm:inline">Updates Pending</span>
             </div>
           )}
-
-          <UsersDropdown />
 
           {user ? (
             <DropdownMenu>
