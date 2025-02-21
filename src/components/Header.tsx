@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useUpdatesStore } from '../stores/updates';
+import { useThreadStore } from '../stores/threads';
 import { authenticateWithGithub, getCurrentUser, logout, GithubUser } from '../utils/auth';
 import { Button } from './ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
@@ -12,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu"
+import { ChevronDown } from 'lucide-react';
 import config from '../../participants.json';
 
 interface HeaderProps {
@@ -75,6 +77,26 @@ export function Header({ onAuthChange }: HeaderProps) {
         </div>
 
         <div className="flex items-center gap-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 gap-2">
+                <span>Thread View</span>
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => useThreadStore.getState().expandAll()}>
+                Expand all threads
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => useThreadStore.getState().collapseAll()}>
+                Close all threads
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => useThreadStore.getState().showNewest()}>
+                Show Newest
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {pendingUpdates > 0 && (
             <div className="flex items-center text-yellow-600 text-sm">
               <svg width="12" height="12" className="animate-spin mr-2" viewBox="0 0 12 12">

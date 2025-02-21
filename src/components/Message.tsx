@@ -136,7 +136,7 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
           </Avatar>
           <div className="flex flex-col">
             <span className="font-medium text-[#2B3137]">@{displayName}</span>
-            <span className="text-sm text-muted-foreground">{message.timestamp}</span>
+            <span className="text-sm text-muted-foreground" data-message-timestamp={message.timestamp}>{message.timestamp}</span>
           </div>
         </CardHeader>
 
