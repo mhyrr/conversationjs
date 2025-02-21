@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu"
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, MessageSquare } from 'lucide-react';
 import config from '../../participants.json';
 
 interface HeaderProps {
@@ -64,23 +64,30 @@ export function Header({ onAuthChange }: HeaderProps) {
   return (
     <div className="w-full bg-background border-b fixed top-0 z-50">
       <div className="flex h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           <div className="flex items-center">
             <img 
               className="h-8 w-auto" 
               src="/favicon.svg"
               alt="ConversationJS" 
             />
-            <span className="ml-2 text-lg font-semibold">ConversationJS</span>
+            <span className="ml-2 text-lg font-semibold hidden sm:inline">ConversationJS</span>
           </div>
-          <UsersDropdown />
+          <div className="hidden sm:block">
+            <UsersDropdown />
+          </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="block sm:hidden">
+            <UsersDropdown />
+          </div>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="h-8 gap-2">
-                <span>Thread View</span>
+                <MessageSquare className="h-4 w-4 sm:hidden" />
+                <span className="hidden sm:inline">Thread View</span>
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>

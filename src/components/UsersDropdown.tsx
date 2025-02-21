@@ -15,7 +15,7 @@ export function UsersDropdown() {
   if (!showDropdown) {
     return (
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <span>between</span>
+        <span className="hidden sm:inline">between</span>
         {participants.participants.map((participant, index) => (
           <div key={participant.username} className="flex items-center gap-2">
             <div className="flex items-center gap-1.5">
@@ -35,7 +35,7 @@ export function UsersDropdown() {
                 <span>@{participant.username}</span>
               </a>
             </div>
-            {index === 0 && <span>and</span>}
+            {index === 0 && <span className="hidden sm:inline">and</span>}
           </div>
         ))}
       </div>

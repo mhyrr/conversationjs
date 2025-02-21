@@ -193,9 +193,10 @@ jobs:
 
 ### TODO
 
-- Handle markdown
+- Add anchor links to each reply.
 - Be able to reply to a specific para, and break it out as a new part of the thread.
 - Add a "reply to" button next to each reply.
+- Markdown can probably be injected to mess the conversation up.
 
 ## License
 

@@ -25,7 +25,8 @@ export function updateMarkdownContent(content: string, update: MessageUpdate): s
           messageMatch[1] === update.messageAuthor && 
           messageMatch[2] === update.messageTimestamp.replace(/Z$/, '')) {
         inTargetMessage = true;
-        newLines.push(`${currentIndent}- @${update.messageAuthor} [${update.messageTimestamp}]: ${update.newContent[0]}`);
+        const timestamp = update.newTimestamp || update.messageTimestamp;
+        newLines.push(`${currentIndent}- @${update.messageAuthor} [${timestamp}]: ${update.newContent[0]}`);
         for (let j = 1; j < update.newContent.length; j++) {
           newLines.push(`${currentIndent}  ${update.newContent[j]}`);
         }

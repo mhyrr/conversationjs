@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import type { MessageNode } from '../utils/tree'
 import { getCurrentUser } from '../utils/auth'
 import { updateMessage, replyToMessage, moveToThread, deleteMessage } from '../utils/api'
@@ -42,11 +44,13 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
   const hasChildren = message.children?.length > 0
 
   const handleEdit = async () => {
+    const newTimestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
     const success = await updateMessage({
       threadTitle,
       messageAuthor: message.author,
       messageTimestamp: message.timestamp,
-      newContent: editContent.split('\n')
+      newContent: editContent.split('\n'),
+      newTimestamp
     });
 
     if (success) {
@@ -161,7 +165,21 @@ export function Message({ message, threadTitle, onUpdate, isNested = false }: Me
           ) : (
             <div className="space-y-1">
               {message.content.map((p, i) => (
-                <p key={i} className="whitespace-pre-wrap">{p}</p>
+                <ReactMarkdown 
+                  key={i} 
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    p: ({children}) => <p className="whitespace-pre-wrap prose prose-sm max-w-none my-1">{children}</p>,
+                    pre: ({children}) => <pre className="my-2">{children}</pre>,
+                    code: ({children}) => <code className="bg-gray-100 rounded px-1">{children}</code>,
+                    ul: ({children}) => <ul className="list-disc pl-4 my-1">{children}</ul>,
+                    ol: ({children}) => <ol className="list-decimal pl-4 my-1">{children}</ol>,
+                    blockquote: ({children}) => <blockquote className="border-l-2 border-gray-300 pl-4 my-2 italic">{children}</blockquote>,
+                    a: ({href, children}) => <a href={href} className="text-blue-600 hover:underline">{children}</a>
+                  }}
+                >
+                  {p}
+                </ReactMarkdown>
               ))}
             </div>
           )}

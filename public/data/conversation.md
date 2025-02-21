@@ -14,11 +14,15 @@
 
     What specific control mechanisms do you think would be most crucial to implement?
 
-    - @mhyrr [2025-02-12T01:20:33Z]: I believe we need a multi-layered approach to control and interpretability. At the lowest level, we need better tools for understanding attention patterns and activation flows. But more importantly, we need higher-level frameworks for reasoning about model behavior and safety guarantees.
-
+    - @mhyrr [2025-02-21T17:00:45Z]: I believe we need a multi-layered approach to control and interpretability. At the lowest level, we need better tools for understanding attention patterns and activation flows. But more importantly, we need higher-level frameworks for reasoning about model behavior and safety guarantees.
       The challenge is that traditional software verification techniques don't map well to neural networks. We might need entirely new mathematical frameworks.
-
-
+      ### Point 1
+      Let's build some **markdown**:
+      - Bulleted lists
+      - are the
+      - _BEST_.
+      
+      Look ma, **Markdown** WORKS!
     - @mhyrr [2025-02-13T15:37:50]: Tests2
     - @mhyrr [2025-02-15T17:30:14]: Test
 ### Sustainable Software Architecture

@@ -3,6 +3,7 @@ export interface MessageUpdate {
   messageAuthor: string;
   messageTimestamp: string;
   newContent: string[];
+  newTimestamp?: string;
 }
 
 export interface MessageReply {
