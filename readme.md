@@ -2,6 +2,8 @@
 
 A GitHub-based conversation platform for collaborative discussions.
 
+Demo Conversation! https://conversationjs.vercel.app/
+
 ## Quick Start
 
 1. Fork this repository
@@ -191,8 +193,6 @@ jobs:
 
 ### TODO
 
-- Easy expand/collapse all threads
-- Only expand threads with most recent replies (say within day of last timestamp)
 - Handle markdown
 - Be able to reply to a specific para, and break it out as a new part of the thread.
 - Add a "reply to" button next to each reply.
