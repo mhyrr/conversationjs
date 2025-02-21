@@ -5,6 +5,7 @@ import { ThreadList } from './components/ThreadList'
 import { useThreads } from './hooks/useThreads'
 import participants from '../participants.json'
 import { Header } from './components/Header'
+import { useThreadStore } from './stores/threads'
 
 export function App() {
   const { threads, triggerUpdate } = useThreads()
@@ -19,6 +20,13 @@ export function App() {
     window.addEventListener('storage', checkAuth)
     return () => window.removeEventListener('storage', checkAuth)
   }, [])
+
+  // Show newest threads when threads are loaded
+  useEffect(() => {
+    if (threads.length > 0) {
+      useThreadStore.getState().showNewest()
+    }
+  }, [threads])
 
   const basePath = import.meta.env.BASE_URL
   const showContent = participants.settings.allow_public_view || isAuthenticated
