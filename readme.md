@@ -143,13 +143,14 @@ Vercel only allows the repository owner commits to trigger deploys. We can work 
 3. Click "set up a workflow yourself" (usually a link at the top)
 4. This will create a new .yml file in .github/workflows - name it something like auto-owner-commit.yml
 5. Copy and paste the workflow code below.
-6. Go to your GitHub profile settings - Scroll down to "Developer settings" on the left
-7. Click "Personal access tokens" → "Tokens (classic) - Generate a new token with repo scope, make sure it has read/write commit access to your repository.
-8. Copy this token
-9. Go to your repository's "Settings" tab, Click "Secrets and variables" in the left sidebar, Click "Actions"
-10. Click "New repository secret"
-11. Name it PAT_TOKEN
-12. Set 'ContributorA' to whoever is not the owner of your conversation repository
+6. Set 'ContributorA' to whoever is not the owner of your conversation repository
+7. Go to your GitHub profile settings - Scroll down to "Developer settings" on the left
+8. Click "Personal access tokens" → "Tokens (classic) - Generate a new token with repo scope, make sure it has read/write commit access to your repository.
+9. Copy this token
+10. Go to your repository's "Settings" tab, Click "Secrets and variables" in the left sidebar, Click "Actions"
+11. Click "New repository secret"
+12. Name it PAT_TOKEN, copy the token you generated in step 8
+
 
 Now, every time contributorA commits, the owner will have a dummy commit to the ```.timestamp``` file, which will properly trigger a deploy.
 
