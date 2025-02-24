@@ -1,8 +1,27 @@
 # ConversationJS ![](public/favicon.svg)
 
-A GitHub-based conversation platform for collaborative discussions.
+ConversationJS is a modern platform for structured, collaborative discussions that combines the power of Git with a clean, threaded UI. Key features:
+
+* **Git-Native**: Every conversation is a markdown file, every message is a commit - giving you full history and collaboration features
+* **Flexible Threading**: Support for multi-subject conversations that can split and branch naturally
+* **GitHub Integration**:
+  * Authentication via GitHub OAuth
+  * Participants are repository collaborators
+  * Works with both public and private repositories
+  * Local development workflow matches GitHub workflow
+* **Modern Stack**:
+  * React 18 + TypeScript + Vite
+  * Beautiful UI with shadcn/ui components
+  * Zero-config Vercel deployment
+* **Simple Architecture**:
+  * Markdown files as source of truth
+  * No database required
+  * Fully static deployment
+  * Built-in GitHub-based persistence
 
 Demo Conversation! https://conversationjs.vercel.app/
+
+Currently tagged at v0.2
 
 ## Quick Start
 
